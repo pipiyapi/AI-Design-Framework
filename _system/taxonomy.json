@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "dimensions": {
+    "page_type": [
+      "landing-page",
+      "portfolio",
+      "knowledge-base",
+      "dashboard",
+      "editorial",
+      "documentation",
+      "e-commerce",
+      "web-app"
+    ],
+    "user_task": [
+      "explore",
+      "read",
+      "search",
+      "compare",
+      "purchase",
+      "create",
+      "manage",
+      "verify-source"
+    ],
+    "visual_style": [
+      "editorial",
+      "swiss",
+      "brutalist",
+      "quiet-luxury",
+      "spatial",
+      "japanese-minimal",
+      "warm-neutral",
+      "monochrome"
+    ],
+    "composition": [
+      "asymmetric",
+      "split-layout",
+      "centered",
+      "modular-grid",
+      "canvas",
+      "content-column",
+      "layered"
+    ],
+    "component_pattern": [
+      "hero",
+      "navigation",
+      "sidebar",
+      "citation",
+      "source-panel",
+      "command-menu",
+      "research-trail",
+      "data-table",
+      "footer"
+    ],
+    "applicability": [
+      "content-heavy",
+      "brand-led",
+      "mobile-first",
+      "desktop-first",
+      "high-density",
+      "low-density",
+      "motion-light",
+      "performance-sensitive"
+    ]
+  },
+  "likedAspects": [
+    "typography",
+    "layout",
+    "color",
+    "motion",
+    "components",
+    "overall-tone"
+  ],
+  "feedbackClasses": [
+    "project-only",
+    "general-preference",
+    "implementation-mismatch"
+  ]
+}

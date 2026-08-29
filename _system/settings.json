@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "vaultName": "Personal Design Memory",
+  "repositoryUrl": "https://github.com/pipiyapi/personal-design-memory",
+  "repositoryBranch": "main",
+  "skillName": "personal-design",
+  "skillVersion": "0.1.0",
+  "reviewPort": 4317,
+  "maxSkillResults": 8,
+  "mediaPolicy": {
+    "includeRawMediaInSkill": false,
+    "preferredImageFormat": "webp",
+    "preferredVideoFormat": "mp4"
+  }
+}

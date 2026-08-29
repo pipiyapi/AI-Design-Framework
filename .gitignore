@@ -1,0 +1,7 @@
+.DS_Store
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+node_modules/
+skill-dist/.tmp-*/
+.design-memory/
+*.log

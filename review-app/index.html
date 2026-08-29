@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Personal Design Memory</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="memory-app">
+  <header class="memory-header">
+    <a class="memory-brand" href="#" aria-label="个人设计记忆首页">
+      <span class="memory-mark" aria-hidden="true">D</span>
+      <span>
+        <strong>Design Memory</strong>
+        <small>先看真实效果，再沉淀知识</small>
+      </span>
+    </a>
+    <div class="memory-status" id="memory-status" aria-live="polite">正在连接…</div>
+  </header>
+
+  <nav class="review-tabs" aria-label="待确认队列">
+    <button type="button" data-tab="inbox" aria-pressed="true">审美确认 <span data-count="inbox">0</span></button>
+    <button type="button" data-tab="patterns" aria-pressed="false">模式晋级 <span data-count="patterns">0</span></button>
+    <button type="button" data-tab="feedback" aria-pressed="false">项目反馈 <span data-count="feedback">0</span></button>
+  </nav>
+
+  <main class="review-shell">
+    <section class="review-intro">
+      <div>
+        <p class="review-kicker" id="review-kicker">审美确认</p>
+        <h1 id="review-heading">先看真实效果，再做判断。</h1>
+      </div>
+      <p class="review-progress" id="review-progress">0 / 0</p>
+    </section>
+
+    <section class="review-stage" id="review-stage" hidden>
+      <div class="evidence-column">
+        <div class="evidence-frame" id="evidence-frame"></div>
+        <div class="evidence-strip" id="evidence-strip" aria-label="可查看的视觉材料"></div>
+      </div>
+
+      <aside class="decision-column">
+        <div class="decision-meta">
+          <p class="decision-type" id="decision-type"></p>
+          <h2 id="decision-title"></h2>
+          <a id="decision-source" href="#" target="_blank" rel="noreferrer">打开原始来源 ↗</a>
+        </div>
+
+        <div class="decision-section">
+          <h3>AI 初步发现</h3>
+          <p id="decision-summary"></p>
+          <div class="tag-list" id="tag-list"></div>
+        </div>
+
+        <div class="decision-section" id="aspect-section">
+          <div class="section-heading">
+            <h3>你具体喜欢什么？</h3>
+            <button type="button" class="text-action" id="toggle-aspects">全选</button>
+          </div>
+          <div class="aspect-grid" id="aspect-grid"></div>
+        </div>
+
+        <div class="decision-section" id="feedback-section" hidden>
+          <h3>这条反馈意味着什么？</h3>
+          <div class="classification-list" id="classification-list"></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="empty-state" id="empty-state">
+      <p class="empty-index">00</p>
+      <h2>现在没有需要你确认的内容。</h2>
+      <p>加入一个网址、截图、视频或 GitHub 仓库，系统会整理视觉材料并放到这里。</p>
+      <code>bin/design-memory ingest --url https://example.com</code>
+    </section>
+  </main>
+
+  <footer class="decision-bar" id="decision-bar" hidden>
+    <button type="button" class="decision-button secondary" data-action="negative">不喜欢</button>
+    <button type="button" class="decision-button quiet" data-action="defer">暂不确定</button>
+    <button type="button" class="decision-button primary" data-action="positive">保留</button>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

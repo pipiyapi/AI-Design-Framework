@@ -1,0 +1,4 @@
+interface:
+  display_name: "Personal Design Memory"
+  short_description: "Use your curated visual design memory in frontend projects"
+  default_prompt: "Use my personal design memory to guide this frontend project."
