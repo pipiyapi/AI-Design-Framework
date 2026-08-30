@@ -131,6 +131,21 @@ test('V1 closes the loop from visual inbox to skill and project feedback', async
   assert.equal((await walkMarkdown(path.join(root, '06-Projects/Accepted'))).length, 1);
 });
 
+test('raw video intake stays in the ignored local cache instead of formal assets', async t => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const input = path.join(root, 'temporary-recording.mov');
+  await fs.writeFile(input, 'temporary video fixture');
+
+  const result = await ingest({ video: input, title: 'Temporary Recording' }, root);
+  const entry = await readEntry(result.note, root);
+  assert.equal(entry.data.raw_media_policy, 'local-intake-only');
+  assert.equal(entry.data.source_file, '');
+  assert.deepEqual(entry.data.media_assets, []);
+  await fs.access(path.join(root, '.design-memory/intake-media', result.id, 'temporary-recording.mov'));
+  await assert.rejects(fs.access(path.join(root, '_assets/references', result.id, 'temporary-recording.mov')));
+});
+
 test('tutorial evidence becomes a reviewed Workflow and Playbook without publishing raw evidence', async t => {
   const root = await makeRoot();
   t.after(() => fs.rm(root, { recursive: true, force: true }));

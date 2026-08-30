@@ -7,3 +7,9 @@ node_modules/
 **/.design-memory/
 *.log
 .dreamina_cli/
+
+# Raw recordings are intake-only. Keep distilled keyframes and notes instead.
+*.mov
+*.mp4
+*.webm
+*.mkv

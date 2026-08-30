@@ -127,10 +127,18 @@ export async function ingest(options, root = vaultRoot()) {
 
   let capture = { errors: [], media: [] };
   if (sourceType === 'url') capture = await captureUrl(input, assetDir);
-  if (sourceType === 'image' || sourceType === 'video') {
+  if (sourceType === 'image') {
     const destination = path.join(assetDir, path.basename(input));
     await copyFileSafe(path.resolve(input), destination);
     capture.media = [destination];
+  }
+  if (sourceType === 'video') {
+    const localIntakeDir = path.join(root, '.design-memory/intake-media', id);
+    const destination = path.join(localIntakeDir, path.basename(input));
+    await ensureDir(localIntakeDir);
+    await copyFileSafe(path.resolve(input), destination);
+    capture.localMedia = [relativeToRoot(destination, root)];
+    capture.rawMediaPolicy = 'local-intake-only';
   }
 
   const title = options.title || capture.title || seed;
@@ -155,7 +163,8 @@ export async function ingest(options, root = vaultRoot()) {
     analysis_status: 'pending',
     source_type: sourceType,
     source_url: sourceType === 'image' || sourceType === 'video' ? '' : input,
-    source_file: sourceType === 'image' || sourceType === 'video' ? path.resolve(input) : '',
+    source_file: sourceType === 'image' ? path.resolve(input) : '',
+    raw_media_policy: sourceType === 'video' ? 'local-intake-only' : '',
     github_candidates: capture.githubLinks || [],
     cover_asset: coverAsset,
     media_assets: mediaAssets,
@@ -170,7 +179,10 @@ export async function ingest(options, root = vaultRoot()) {
   const embeds = mediaAssets.map(asset => asset.match(/\.(mp4|mov|webm)$/i)
     ? `- Video: [[${asset}]]`
     : `![[${asset}]]`).join('\n\n');
-  const body = `\n# ${title}\n\n## Visual evidence\n\n${embeds || '_No visual capture available yet._'}\n\n## AI analysis\n\n_Pending Codex analysis._\n\n## Why it works\n\n## Reusable patterns\n\n## Works for\n\n## Avoid for\n\n## Personal notes\n`;
+  const emptyEvidence = sourceType === 'video'
+    ? '_Raw video is available only in the ignored local intake cache. Retain distilled keyframes/transcript before completing review._'
+    : '_No visual capture available yet._';
+  const body = `\n# ${title}\n\n## Visual evidence\n\n${embeds || emptyEvidence}\n\n## AI analysis\n\n_Pending Codex analysis._\n\n## Why it works\n\n## Reusable patterns\n\n## Works for\n\n## Avoid for\n\n## Personal notes\n`;
   const note = path.join(root, '00-Inbox', `${id}.md`);
   await writeEntry(note, data, body);
   return { id, note, captureErrors: capture.errors || [] };

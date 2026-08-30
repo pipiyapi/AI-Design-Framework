@@ -17,7 +17,7 @@ When the user asks to save, study, or ingest a website, image, video, GitHub rep
 1. Accept the smallest input they provide. Do not ask them to determine whether source code is available.
 2. Run `bin/design-memory ingest` with the matching input type. A normal webpage or social link uses `--url`; a repository uses `--github`; local media uses `--image` or `--video`.
 3. For a URL, let the intake script attempt desktop and mobile captures and record discoverable GitHub links. If the page is protected or the capture is incomplete, use an available signed-in browser session when possible. Ask for screenshots only when no adequate visual evidence can be obtained.
-4. Inspect the captured image or video itself. Do not make an aesthetic judgment from text alone.
+4. Inspect the captured image or video itself. Do not make an aesthetic judgment from text alone. Raw video is intake-only: keep it under the ignored `data/.design-memory/intake-media/` cache, never in Data Git history. Before review is completed, retain only lightweight keyframes, transcript/subtitle evidence, and distilled notes in the formal Data repository.
 5. Update the new Inbox note with a compact design analysis and controlled `suggested_tags` from `_system/taxonomy.json`. Cover:
    - page type and primary user task;
    - visual style and overall tone;
@@ -38,7 +38,7 @@ A confirmed tutorial becomes a Workflow in `07-Workflows`. A reviewed tool-agnos
 
 Default `image-generation` to Codex Image Generation. Default `video-generation` to the official Jimeng CLI with Seedance 2.0 or 2.5. Before every video submission, show the exact single-output proposal and ask for explicit confirmation. One confirmation authorizes one task and one output; batching, automatic variants, and approval reuse are forbidden. Every retry or material change requires confirmation again. Polling, downloading, and QA after submission do not. Never store credentials or session material in the vault, Git, GitHub, proposals, or logs.
 
-Do not reproduce every saved site. A screenshot plus compact analysis is sufficient for an initial Reference.
+Do not reproduce every saved site. A screenshot plus compact analysis is sufficient for an initial Reference. A raw screen recording or downloaded source video is not a knowledge artifact and must not be committed.
 
 ## Source-code handling
 

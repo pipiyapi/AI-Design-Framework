@@ -32,4 +32,4 @@ bin/design-memory bootstrap --root <directory>
 
 ## 数据边界
 
-Framework 只保存能力和空白蓝图。Reference、Workflow、Playbook、Recipe、Personal DNA、项目反馈、媒体、原始证据、catalog 和 Obsidian 配置只属于 Data。`skill-dist/` 是两层组合后的可再生产物，不进入任一仓库历史。
+Framework 只保存能力和空白蓝图。Reference、Workflow、Playbook、Recipe、Personal DNA、项目反馈、轻量截图/关键帧、提炼后的证据、catalog 和 Obsidian 配置只属于 Data。原始录像只进入 Data 内被 Git 忽略的 `.design-memory/intake-media/` 临时区，不属于正式知识库。`skill-dist/` 是两层组合后的可再生产物，不进入任一仓库历史。
