@@ -102,25 +102,32 @@ function entryJson(entry) {
     skillVersion: data.skill_version || '',
     explicitFeedback: data.explicit_feedback || '',
     classification: data.classification || 'unclassified',
+    outcome: data.outcome || '',
+    capabilitySlots: array(data.capability_slots),
+    evidenceQuality: data.evidence_quality || '',
+    evidenceCoverage: array(data.evidence_coverage),
+    missingEvidence: array(data.missing_evidence),
     media,
     relativePath: entry.relativePath,
   };
 }
 
-async function entriesFrom(relativeDir) {
+async function entriesFrom(relativeDir, type = null) {
   const files = await walkMarkdown(path.join(root, relativeDir));
   const entries = [];
   for (const file of files) {
     const entry = await readEntry(file, root);
-    if (entry.data.id) entries.push(entryJson(entry));
+    if (entry.data.id && (!type || entry.data.type === type)) entries.push(entryJson(entry));
   }
   return entries;
 }
 
 async function state() {
   return {
-    inbox: await entriesFrom('00-Inbox'),
+    inbox: await entriesFrom('00-Inbox', 'reference'),
+    workflows: await entriesFrom('00-Inbox', 'workflow'),
     patterns: await entriesFrom('_candidates/patterns'),
+    playbooks: await entriesFrom('_candidates/playbooks'),
     feedback: await entriesFrom('06-Projects/Feedback-Inbox'),
     taxonomy: JSON.parse(await fs.readFile(path.join(root, '_system/taxonomy.json'), 'utf8')),
     settings: {
@@ -160,6 +167,37 @@ async function reviewPattern(payload) {
   } else if (payload.decision === 'rejected') {
     await updateEntry(entry.file, { status: 'rejected', review_status: 'rejected' });
     await moveEntry(entry, path.join(root, '_archive/rejected-patterns'));
+  } else {
+    await updateEntry(entry.file, { status: 'candidate', review_status: 'observe' });
+  }
+  await buildCatalog(root);
+}
+
+async function reviewWorkflow(payload) {
+  const entry = await findEntryById(path.join(root, '00-Inbox'), payload.id);
+  if (!entry || entry.data.type !== 'workflow') throw new Error('Workflow not found in Inbox.');
+  const common = { review_status: payload.decision, reviewed_at: new Date().toISOString() };
+  if (payload.decision === 'approved') {
+    await updateEntry(entry.file, { ...common, status: 'validated' });
+    await moveEntry(entry, path.join(root, '07-Workflows'));
+  } else if (payload.decision === 'rejected') {
+    await updateEntry(entry.file, { ...common, status: 'rejected' });
+    await moveEntry(entry, path.join(root, '_archive/rejected-workflows'));
+  } else {
+    await updateEntry(entry.file, { ...common, status: 'inbox' });
+  }
+  await buildCatalog(root);
+}
+
+async function reviewPlaybook(payload) {
+  const entry = await findEntryById(path.join(root, '_candidates/playbooks'), payload.id);
+  if (!entry) throw new Error('Playbook candidate not found.');
+  if (payload.decision === 'approved') {
+    await updateEntry(entry.file, { status: 'validated', review_status: 'approved' });
+    await moveEntry(entry, path.join(root, '08-Playbooks'));
+  } else if (payload.decision === 'rejected') {
+    await updateEntry(entry.file, { status: 'rejected', review_status: 'rejected' });
+    await moveEntry(entry, path.join(root, '_archive/rejected-playbooks'));
   } else {
     await updateEntry(entry.file, { status: 'candidate', review_status: 'observe' });
   }
@@ -224,6 +262,14 @@ const server = http.createServer(async (request, response) => {
     }
     if (request.method === 'POST' && url.pathname === '/api/review/pattern') {
       await reviewPattern(await bodyJson(request));
+      return json(response, 200, { ok: true });
+    }
+    if (request.method === 'POST' && url.pathname === '/api/review/workflow') {
+      await reviewWorkflow(await bodyJson(request));
+      return json(response, 200, { ok: true });
+    }
+    if (request.method === 'POST' && url.pathname === '/api/review/playbook') {
+      await reviewPlaybook(await bodyJson(request));
       return json(response, 200, { ok: true });
     }
     if (request.method === 'POST' && url.pathname === '/api/review/feedback') {

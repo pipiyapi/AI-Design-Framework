@@ -22,7 +22,9 @@
 
   <nav class="review-tabs" aria-label="待确认队列">
     <button type="button" data-tab="inbox" aria-pressed="true">审美确认 <span data-count="inbox">0</span></button>
+    <button type="button" data-tab="workflows" aria-pressed="false">教程工作流 <span data-count="workflows">0</span></button>
     <button type="button" data-tab="patterns" aria-pressed="false">模式晋级 <span data-count="patterns">0</span></button>
+    <button type="button" data-tab="playbooks" aria-pressed="false">方法手册 <span data-count="playbooks">0</span></button>
     <button type="button" data-tab="feedback" aria-pressed="false">项目反馈 <span data-count="feedback">0</span></button>
   </nav>
 
@@ -66,14 +68,19 @@
           <h3>这条反馈意味着什么？</h3>
           <div class="classification-list" id="classification-list"></div>
         </div>
+
+        <div class="decision-section workflow-section" id="workflow-section" hidden>
+          <h3>这条路径能否复用？</h3>
+          <dl class="workflow-facts" id="workflow-facts"></dl>
+        </div>
       </aside>
     </section>
 
     <section class="empty-state" id="empty-state">
       <p class="empty-index">00</p>
       <h2>现在没有需要你确认的内容。</h2>
-      <p>加入一个网址、截图、视频或 GitHub 仓库，系统会整理视觉材料并放到这里。</p>
-      <code>bin/design-memory ingest --url https://example.com</code>
+      <p>加入一个网址、截图、视频、GitHub 仓库或三大视频平台教程，系统会整理证据并放到对应队列。</p>
+      <code>bin/design-memory tutorial --url &lt;分享链接&gt;</code>
     </section>
   </main>
 

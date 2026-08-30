@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "platform": "xiaohongshu",
+  "source_url": "https://xhslink.cn/o/6xTqhVG7Mgt",
+  "canonical_url": "https://www.xiaohongshu.com/explore/6a6571a2000000000101eac6",
+  "platform_id": "6a6571a2000000000101eac6",
+  "captured_at": "2026-08-30T09:35:00.000Z",
+  "capture_routes": [
+    "share-link redirect resolution",
+    "signed browser page text and comments",
+    "manual video timeline inspection"
+  ],
+  "evidence_coverage": [
+    "title, author, body, duration and canonical URL",
+    "visible tutorial video steps and implementation formula",
+    "useful author replies about tools, eye motion, quality and alternatives"
+  ],
+  "missing_evidence": [
+    "downloaded source video",
+    "machine-generated full transcript",
+    "stored timestamped keyframe images",
+    "comments hidden behind login"
+  ],
+  "author": "觉之设计",
+  "title": "VibeCoding教程：让角色跟着鼠标转头",
+  "duration_seconds": 68.36,
+  "page_text": "The author describes three stages: generate consistent left- and right-looking character images; use them as first and last frames for a video; then build a web page whose video time follows pointer movement.",
+  "transcript": "",
+  "timeline": [
+    {
+      "stage": "asset endpoints",
+      "evidence": "two consistent character states are prepared"
+    },
+    {
+      "stage": "motion bridge",
+      "evidence": "endpoint images become the first and last frames of one transition clip"
+    },
+    {
+      "stage": "web implementation",
+      "evidence": "video autoplay is disabled and pointer movement controls currentTime"
+    },
+    {
+      "stage": "seek control",
+      "evidence": "pointer delta is normalized by viewport width, scaled by sensitivity and duration, clamped, then queued around seek completion"
+    }
+  ],
+  "comments": [
+    "The source used the same commercial creative platform for images and video, but the author says the exact coding agent is not important.",
+    "The eyes must rotate naturally with the head; this must be solved during video generation.",
+    "The effect depends heavily on image and video quality.",
+    "Rive can produce a better result, while the video method is simpler.",
+    "A desktop wallpaper can only play video and cannot preserve pointer interactivity."
+  ],
+  "source_tool_mentions": [
+    "Jimeng",
+    "Gemini",
+    "Codex",
+    "Claude Code",
+    "Figma Make",
+    "Rive"
+  ],
+  "distillation": {
+    "outcome": "A hero character turns continuously in response to horizontal pointer movement.",
+    "capability_slots": [
+      "image-generation",
+      "video-generation",
+      "frontend-generation"
+    ],
+    "steps": [
+      {
+        "title": "Design endpoint states",
+        "detail": "Create two images with identical identity, framing, background and lighting; change only the intended head and eye direction.",
+        "input": "character art direction",
+        "output": "left/right endpoint images"
+      },
+      {
+        "title": "Generate one continuous transition",
+        "detail": "Use the endpoints as first and last frames. Require natural synchronized eye and head rotation, stable identity and a locked camera.",
+        "input": "endpoint images",
+        "output": "short reversible transition clip"
+      },
+      {
+        "title": "Treat video time as interaction state",
+        "detail": "Disable autoplay. On horizontal pointer movement, map normalized delta to a target video time using sensitivity and clip duration.",
+        "input": "pointer delta and current video time",
+        "output": "target playback time"
+      },
+      {
+        "title": "Protect the seek pipeline",
+        "detail": "Clamp the target to the clip range and queue updates until seeking finishes so rapid mouse events do not flood the decoder.",
+        "input": "target time",
+        "output": "stable scrubbing"
+      },
+      {
+        "title": "Tune and degrade gracefully",
+        "detail": "Adjust sensitivity, preload a poster, test performance, and provide a non-interactive fallback for touch, reduced-motion or weak devices.",
+        "input": "rendered page",
+        "output": "production-ready interaction"
+      }
+    ],
+    "success_criteria": [
+      "character identity, framing, background and lighting remain stable",
+      "eyes and head rotate together without a dead or sliding gaze",
+      "pointer reversal produces an immediate and believable reverse turn",
+      "seeking remains responsive without flicker, stalls or event flooding",
+      "the page has a clear poster or static fallback before the video is ready"
+    ],
+    "failure_modes": [
+      "endpoint images differ in pose, composition or lighting and cause a morphing jump",
+      "only the head rotates while the eyes remain fixed",
+      "camera motion or background drift makes scrubbing feel detached from the pointer",
+      "every mousemove writes currentTime immediately and overwhelms seeking",
+      "high-resolution video becomes the hero bottleneck on mobile or low-power devices"
+    ],
+    "prompt_recipe": "Preserve character identity, framing, lighting and background. Animate only a smooth horizontal head turn with synchronized natural eye movement. Keep the camera locked, motion continuous and endpoints exact; avoid blinking artifacts, facial morphing, background drift and extra body motion.",
+    "reuse_notes": "Use video scrubbing when the interaction is visually rich but has one continuous axis and a simple implementation is valuable. Prefer Rive, sprites or a real-time animation system when finer state control, transparency, resolution independence or frequent branching is required.",
+    "works_for": [
+      "brand-led",
+      "desktop-first",
+      "low-density",
+      "interactive-hero"
+    ],
+    "avoid_for": [
+      "content-heavy",
+      "high-density",
+      "performance-sensitive"
+    ],
+    "suggested_tags": [
+      "character-interaction",
+      "pointer-scrubbing",
+      "video-as-state",
+      "interactive-hero"
+    ],
+    "confidence": 0.88
+  },
+  "content_hash": "5dc3c6d98fe7e9b1ad6333b92b7400de00842a44a282bdcded52678f64d05a99"
+}

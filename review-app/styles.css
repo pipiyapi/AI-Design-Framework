@@ -253,6 +253,17 @@ button { color: inherit; }
 .classification-list strong { font-size: 13px; font-weight: 600; }
 .classification-list small { margin-top: 4px; color: var(--muted-ink); line-height: 1.4; }
 
+.workflow-facts {
+  display: grid;
+  grid-template-columns: minmax(88px, .42fr) minmax(0, 1fr);
+  gap: 10px 16px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.workflow-facts dt { color: var(--muted-ink); }
+.workflow-facts dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+
 .decision-bar {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

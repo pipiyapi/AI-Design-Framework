@@ -9,6 +9,8 @@ const KNOWLEDGE_EXPORTS = [
   ['03-Recipes', 'recipes'],
   ['04-Principles', 'principles'],
   ['05-Personal-DNA', 'personal-dna'],
+  ['07-Workflows', 'workflows'],
+  ['08-Playbooks', 'playbooks'],
 ];
 
 async function copyExisting(source, target) {

@@ -13,6 +13,8 @@ const KNOWLEDGE_DIRS = [
   '03-Recipes',
   '04-Principles',
   '05-Personal-DNA',
+  '07-Workflows',
+  '08-Playbooks',
 ];
 
 function list(value) {
@@ -48,6 +50,10 @@ export async function buildCatalog(root = vaultRoot()) {
         liked_aspects: list(entry.data.liked_aspects),
         preference_score: entry.data.preference_score ?? null,
         source_url: entry.data.source_url || null,
+        source_platform: entry.data.source_platform || null,
+        capability_slots: list(entry.data.capability_slots),
+        outcome: entry.data.outcome || null,
+        evidence_quality: entry.data.evidence_quality || null,
         cover_asset: entry.data.cover_asset || entry.data.preview_asset || null,
         summary: excerpt(entry.body),
         updated_at: entry.data.updated_at || entry.data.created_at || null,

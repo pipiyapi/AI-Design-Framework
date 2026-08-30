@@ -22,6 +22,9 @@ case "$COMMAND" in
   ingest)
     exec "$NODE_BIN" "$ROOT_DIR/scripts/ingest.mjs" "$@"
     ;;
+  tutorial)
+    exec "$NODE_BIN" "$ROOT_DIR/scripts/ingest-tutorial.mjs" "$@"
+    ;;
   catalog)
     exec "$NODE_BIN" "$ROOT_DIR/scripts/build-catalog.mjs" "$@"
     ;;
@@ -30,6 +33,12 @@ case "$COMMAND" in
     ;;
   pattern)
     exec "$NODE_BIN" "$ROOT_DIR/scripts/create-pattern-candidate.mjs" "$@"
+    ;;
+  playbook)
+    exec "$NODE_BIN" "$ROOT_DIR/scripts/create-playbook-candidate.mjs" "$@"
+    ;;
+  video-proposal)
+    exec "$NODE_BIN" "$ROOT_DIR/scripts/video-proposal.mjs" "$@"
     ;;
   import-feedback)
     exec "$NODE_BIN" "$ROOT_DIR/scripts/import-feedback.mjs" "$@"
@@ -44,9 +53,12 @@ case "$COMMAND" in
     echo "Commands:"
     echo "  start"
     echo "  ingest --url|--image|--video|--github <value>"
+    echo "  tutorial --url <xiaohongshu|douyin|bilibili> [--evidence evidence.json]"
     echo "  catalog"
     echo "  build"
     echo "  pattern --title <name> --references <id,id> --rule <text>"
+    echo "  playbook --title <name> --workflows <id,id> --mechanism <text>"
+    echo "  video-proposal --goal <text> --model seedance-2.5 [options]"
     echo "  import-feedback <project-directory>"
     echo "  test"
     ;;

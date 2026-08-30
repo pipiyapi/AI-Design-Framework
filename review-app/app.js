@@ -24,6 +24,22 @@ const copy = {
     defer: '继续观察',
     positive: '确认晋级',
   },
+  workflows: {
+    kicker: '教程提炼',
+    heading: '验证步骤证据，再收下这条路径。',
+    type: '工作流候选',
+    negative: '不保留',
+    defer: '证据不足',
+    positive: '确认可复用',
+  },
+  playbooks: {
+    kicker: '方法泛化',
+    heading: '去掉工具名称后，它仍然成立吗？',
+    type: '方法手册候选',
+    negative: '拒绝晋级',
+    defer: '继续观察',
+    positive: '确认晋级',
+  },
   feedback: {
     kicker: '项目反馈',
     heading: '问题来自审美、场景，还是实现？',
@@ -70,7 +86,7 @@ function showToast(message) {
 function setStatus(message) { $('#memory-status').textContent = message; }
 
 function renderCounts() {
-  for (const key of ['inbox', 'patterns', 'feedback']) {
+  for (const key of ['inbox', 'workflows', 'patterns', 'playbooks', 'feedback']) {
     $(`[data-count="${key}"]`).textContent = state.data?.[key]?.length || 0;
   }
 }
@@ -84,7 +100,9 @@ function renderMedia(item) {
   if (!media.length) {
     const placeholder = document.createElement('p');
     placeholder.className = 'evidence-placeholder';
-    placeholder.textContent = '暂时没有视觉材料。请先补充截图或录屏，再做审美判断。';
+    placeholder.textContent = item.type === 'workflow'
+      ? '暂未保存关键帧。请结合证据覆盖和缺失项判断这条路径是否值得保留。'
+      : '暂时没有视觉材料。请先补充截图或录屏，再做审美判断。';
     frame.append(placeholder);
     return;
   }
@@ -181,6 +199,28 @@ function renderClassifications() {
   });
 }
 
+function renderWorkflowFacts(item) {
+  const section = $('#workflow-section');
+  const container = $('#workflow-facts');
+  const visible = state.tab === 'workflows' || state.tab === 'playbooks';
+  section.hidden = !visible;
+  container.replaceChildren();
+  if (!visible) return;
+  const facts = [
+    ['目标效果', item.outcome || '等待补充'],
+    ['证据质量', ({ full: '完整', partial: '部分', weak: '较弱' })[item.evidenceQuality] || item.evidenceQuality || (state.tab === 'playbooks' ? '来自已确认工作流' : '等待判断')],
+    ['能力槽', (item.capabilitySlots || []).join(' · ') || '等待映射'],
+    ['缺失证据', (item.missingEvidence || []).join(' · ') || '未记录缺失'],
+  ];
+  facts.forEach(([label, value]) => {
+    const dt = document.createElement('dt');
+    dt.textContent = label;
+    const dd = document.createElement('dd');
+    dd.textContent = value;
+    container.append(dt, dd);
+  });
+}
+
 function render() {
   if (!state.data) return;
   renderCounts();
@@ -206,6 +246,7 @@ function render() {
   renderMedia(item);
   renderAspects(item);
   renderClassifications();
+  renderWorkflowFacts(item);
 
   $('[data-action="negative"]').textContent = config.negative;
   $('[data-action="defer"]').textContent = config.defer;
@@ -240,9 +281,15 @@ async function act(kind) {
   if (state.tab === 'inbox') {
     const decision = kind === 'positive' ? 'liked' : kind === 'negative' ? 'rejected' : 'unsure';
     await post('/api/review/reference', { id: item.id, decision, aspects: [...state.aspects] });
+  } else if (state.tab === 'workflows') {
+    const decision = kind === 'positive' ? 'approved' : kind === 'negative' ? 'rejected' : 'observe';
+    await post('/api/review/workflow', { id: item.id, decision });
   } else if (state.tab === 'patterns') {
     const decision = kind === 'positive' ? 'approved' : kind === 'negative' ? 'rejected' : 'observe';
     await post('/api/review/pattern', { id: item.id, decision });
+  } else if (state.tab === 'playbooks') {
+    const decision = kind === 'positive' ? 'approved' : kind === 'negative' ? 'rejected' : 'observe';
+    await post('/api/review/playbook', { id: item.id, decision });
   } else {
     const decision = kind === 'positive' ? 'approved' : 'deferred';
     await post('/api/review/feedback', { id: item.id, decision, classification: state.classification });

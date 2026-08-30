@@ -26,9 +26,11 @@ Use hard constraints before aesthetic similarity. Reject knowledge when `avoid_f
 Load in this order:
 
 1. Personal DNA and anti-patterns relevant to the brief.
-2. Validated Patterns matching the product and task.
-3. Verified Recipes matching the stack and context.
-4. A small number of source References only when visual evidence is needed.
+2. Validated Playbooks matching the intended outcome and mechanism.
+3. Validated Workflows when a demonstrated execution order is useful.
+4. Validated Patterns matching the product and task.
+5. Verified Recipes matching the stack and context.
+6. A small number of source References only when visual evidence is needed.
 
 ## Required provenance
 

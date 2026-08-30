@@ -11,6 +11,10 @@ import { buildSkill } from '../scripts/build-skill.mjs';
 import { createPatternCandidate } from '../scripts/create-pattern-candidate.mjs';
 import { importFeedback } from '../scripts/import-feedback.mjs';
 import { ingest } from '../scripts/ingest.mjs';
+import { ingestTutorial } from '../scripts/ingest-tutorial.mjs';
+import { createPlaybookCandidate } from '../scripts/create-playbook-candidate.mjs';
+import { createVideoProposal } from '../scripts/video-proposal.mjs';
+import { assertSubmissionAllowed } from '../scripts/lib/video-generation-policy.mjs';
 import { readEntry, walkMarkdown } from '../scripts/lib/vault.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -20,8 +24,10 @@ async function makeRoot() {
   for (const dir of [
     '00-Inbox', '01-References', '02-Patterns', '03-Recipes', '04-Principles',
     '05-Personal-DNA', '06-Projects/Feedback-Inbox', '06-Projects/Accepted',
+    '07-Workflows', '08-Playbooks',
     '_assets/references', '_archive/rejected-references', '_archive/rejected-patterns',
-    '_candidates/patterns', '_system', 'skill-dist',
+    '_archive/rejected-workflows', '_archive/rejected-playbooks', '_candidates/patterns',
+    '_candidates/playbooks', '_evidence/tutorials', '_generation/video-proposals', '_system', 'skill-dist',
   ]) await fs.mkdir(path.join(root, dir), { recursive: true });
   await fs.cp(path.join(repoRoot, 'skill-source'), path.join(root, 'skill-source'), { recursive: true });
   await fs.copyFile(path.join(repoRoot, '_system/settings.json'), path.join(root, '_system/settings.json'));
@@ -122,4 +128,71 @@ test('V1 closes the loop from visual inbox to skill and project feedback', async
   });
   assert.equal(approve.status, 200);
   assert.equal((await walkMarkdown(path.join(root, '06-Projects/Accepted'))).length, 1);
+});
+
+test('tutorial evidence becomes a reviewed Workflow and Playbook without publishing raw evidence', async t => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const evidenceFile = path.join(root, 'tutorial.json');
+  await fs.writeFile(evidenceFile, JSON.stringify({
+    title: 'Pointer-driven character turn',
+    canonical_url: 'https://www.xiaohongshu.com/explore/test123',
+    platform_id: 'test123',
+    page_text: 'raw source tool and prompt evidence',
+    evidence_coverage: ['page text', 'timeline'],
+    distillation: {
+      outcome: 'character follows pointer',
+      capability_slots: ['image-generation', 'video-generation', 'frontend-generation'],
+      steps: ['Create consistent endpoint images', 'Generate one continuous transition clip', 'Map pointer delta to video time'],
+      success_criteria: ['eyes and head move together'],
+      failure_modes: ['seek flooding'],
+      prompt_recipe: 'Keep identity fixed; turn eyes and head naturally; preserve lighting and framing.',
+      confidence: 0.86,
+    },
+  }));
+  const workflow = await ingestTutorial({ url: 'https://xhslink.cn/o/test', evidence: evidenceFile }, root);
+  assert.equal((await readEntry(workflow.note, root)).data.type, 'workflow');
+
+  const port = 45500 + Math.floor(Math.random() * 300);
+  const child = spawn(process.execPath, [path.join(repoRoot, 'review-app/server.mjs'), '--port', String(port)], {
+    cwd: repoRoot,
+    env: { ...process.env, DESIGN_MEMORY_ROOT: root, PORT: String(port) },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  t.after(() => child.kill('SIGTERM'));
+  await waitForServer(child, `http://127.0.0.1:${port}/api/health`);
+  const approve = await fetch(`http://127.0.0.1:${port}/api/review/workflow`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: workflow.id, decision: 'approved' }),
+  });
+  assert.equal(approve.status, 200);
+  assert.equal((await walkMarkdown(path.join(root, '07-Workflows'))).length, 1);
+
+  const playbookFile = await createPlaybookCandidate({
+    title: 'Pointer-scrubbed character state', workflows: workflow.id,
+    mechanism: 'Use a short transition clip as a continuous state space controlled by pointer movement.',
+    capabilities: 'image-generation,video-generation,frontend-generation',
+  }, root);
+  const playbook = await readEntry(playbookFile, root);
+  const promote = await fetch(`http://127.0.0.1:${port}/api/review/playbook`, {
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: playbook.data.id, decision: 'approved' }),
+  });
+  assert.equal(promote.status, 200);
+  const skill = await buildSkill(root);
+  await fs.access(path.join(skill.target, 'references/knowledge/workflows'));
+  await fs.access(path.join(skill.target, 'references/knowledge/playbooks'));
+  await assert.rejects(fs.access(path.join(skill.target, '_evidence')));
+});
+
+test('video proposal enforces one output and matching unconsumed approval', async t => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const { proposal } = await createVideoProposal({
+    goal: 'Natural character head turn', model: 'seedance-2.5', duration: '5s', ratio: '16:9', resolution: '1080p',
+    motion: 'eyes and head rotate together|stable identity', avoid: 'camera movement|flicker',
+  }, root);
+  assert.equal(proposal.output_count, 1);
+  assert.throws(() => assertSubmissionAllowed(proposal, null), /confirmation/i);
+  const approved = { ...proposal, status: 'approved-for-one-submission' };
+  assert.equal(assertSubmissionAllowed(approved, { proposal_id: proposal.id, explicit_user_confirmation: true, consumed_at: null }), true);
+  assert.throws(() => assertSubmissionAllowed(approved, { proposal_id: proposal.id, explicit_user_confirmation: true, consumed_at: new Date().toISOString() }), /already/i);
 });

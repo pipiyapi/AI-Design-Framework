@@ -60,6 +60,33 @@
       "low-density",
       "motion-light",
       "performance-sensitive"
+    ],
+    "interaction_mechanism": [
+      "pointer-scrubbing",
+      "scroll-scrubbing",
+      "cursor-follow",
+      "parallax",
+      "state-transition",
+      "video-as-state",
+      "canvas-animation",
+      "rive-animation"
+    ],
+    "capability_slot": [
+      "image-generation",
+      "video-generation",
+      "video-transcription",
+      "keyframe-extraction",
+      "ocr",
+      "frontend-generation",
+      "browser-capture"
+    ],
+    "tutorial_outcome": [
+      "interactive-hero",
+      "motion-background",
+      "character-interaction",
+      "micro-interaction",
+      "page-transition",
+      "scroll-narrative"
     ]
   },
   "likedAspects": [
