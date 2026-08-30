@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "vaultName": "Personal Design Memory",
+  "repositoryUrl": "",
+  "frameworkRepositoryUrl": "https://github.com/pipiyapi/AI-Design-Framework",
+  "repositoryBranch": "main",
+  "skillName": "personal-design",
+  "skillVersion": "0.2.0",
+  "reviewPort": 4317,
+  "maxSkillResults": 8,
+  "mediaPolicy": {
+    "includeRawMediaInSkill": false,
+    "preferredImageFormat": "webp",
+    "preferredVideoFormat": "mp4",
+    "imageGenerator": "codex-imagegen",
+    "videoGenerator": "jimeng-cli",
+    "videoModels": ["seedance-2.0", "seedance-2.5"],
+    "videoApproval": {
+      "requiredBeforeEverySubmission": true,
+      "maxOutputsPerApproval": 1,
+      "batchGenerationAllowed": false,
+      "retryRequiresNewApproval": true
+    }
+  },
+  "tutorialIntake": {
+    "platforms": ["xiaohongshu", "douyin", "bilibili"],
+    "rawEvidencePublishedToSkill": false,
+    "dedupeKeys": ["platform+platform_id", "canonical_url", "content_hash"]
+  }
+}

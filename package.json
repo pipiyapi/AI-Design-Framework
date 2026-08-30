@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node review-app/server.mjs",
+    "bootstrap:data": "node scripts/bootstrap-data.mjs",
     "ingest": "node scripts/ingest.mjs",
     "ingest:tutorial": "node scripts/ingest-tutorial.mjs",
     "catalog": "node scripts/build-catalog.mjs",

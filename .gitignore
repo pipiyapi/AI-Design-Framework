@@ -1,7 +1,7 @@
 .DS_Store
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
+/data/
 node_modules/
-skill-dist/.tmp-*/
+.pnpm-store/
+skill-dist/
 .design-memory/
 *.log

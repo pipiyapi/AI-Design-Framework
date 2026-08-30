@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildCatalog } from './build-catalog.mjs';
-import { ensureDir, readJson, vaultRoot } from './lib/vault.mjs';
+import { ensureDir, frameworkRoot, readJson, vaultRoot } from './lib/vault.mjs';
 
 const KNOWLEDGE_EXPORTS = [
   ['02-Patterns', 'patterns'],
@@ -24,8 +24,10 @@ async function copyExisting(source, target) {
 export async function buildSkill(root = vaultRoot()) {
   const catalog = await buildCatalog(root);
   const settings = await readJson(path.join(root, '_system/settings.json'));
-  const source = path.join(root, 'skill-source/personal-design');
-  const distRoot = path.join(root, 'skill-dist');
+  const framework = frameworkRoot();
+  const localSource = path.join(root, 'skill-source/personal-design');
+  const source = await fs.access(localSource).then(() => localSource).catch(() => path.join(framework, 'skill-source/personal-design'));
+  const distRoot = source === localSource ? path.join(root, 'skill-dist') : path.join(framework, 'skill-dist');
   const target = path.join(distRoot, 'personal-design');
   const temporary = path.join(distRoot, `.tmp-${process.pid}-${Date.now()}`);
 

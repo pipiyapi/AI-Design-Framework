@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 import { buildCatalog } from '../scripts/build-catalog.mjs';
 import { buildSkill } from '../scripts/build-skill.mjs';
+import { bootstrapData } from '../scripts/bootstrap-data.mjs';
 import { createPatternCandidate } from '../scripts/create-pattern-candidate.mjs';
 import { importFeedback } from '../scripts/import-feedback.mjs';
 import { ingest } from '../scripts/ingest.mjs';
@@ -30,8 +31,8 @@ async function makeRoot() {
     '_candidates/playbooks', '_evidence/tutorials', '_generation/video-proposals', '_system', 'skill-dist',
   ]) await fs.mkdir(path.join(root, dir), { recursive: true });
   await fs.cp(path.join(repoRoot, 'skill-source'), path.join(root, 'skill-source'), { recursive: true });
-  await fs.copyFile(path.join(repoRoot, '_system/settings.json'), path.join(root, '_system/settings.json'));
-  await fs.copyFile(path.join(repoRoot, '_system/taxonomy.json'), path.join(root, '_system/taxonomy.json'));
+  await fs.copyFile(path.join(repoRoot, 'data-template/_system/settings.json'), path.join(root, '_system/settings.json'));
+  await fs.copyFile(path.join(repoRoot, 'data-template/_system/taxonomy.json'), path.join(root, '_system/taxonomy.json'));
   await fs.writeFile(path.join(root, '05-Personal-DNA/preferences.md'), `---\nid: "dna-test"\ntype: "personal-dna"\ntitle: "Test DNA"\nstatus: "active"\ntags: ["editorial"]\n---\n\n# Test DNA\n\nPrefer restrained editorial hierarchy.\n`);
   return root;
 }
@@ -195,4 +196,17 @@ test('video proposal enforces one output and matching unconsumed approval', asyn
   const approved = { ...proposal, status: 'approved-for-one-submission' };
   assert.equal(assertSubmissionAllowed(approved, { proposal_id: proposal.id, explicit_user_confirmation: true, consumed_at: null }), true);
   assert.throws(() => assertSubmissionAllowed(approved, { proposal_id: proposal.id, explicit_user_confirmation: true, consumed_at: new Date().toISOString() }), /already/i);
+});
+
+test('framework bootstraps a separate empty data repository without overwriting it', async t => {
+  const parent = await fs.mkdtemp(path.join(os.tmpdir(), 'design-data-bootstrap-'));
+  t.after(() => fs.rm(parent, { recursive: true, force: true }));
+  const root = path.join(parent, 'data');
+  await bootstrapData(root);
+  await fs.access(path.join(root, '_system/settings.json'));
+  await fs.access(path.join(root, '00-Inbox/.gitkeep'));
+  const marker = path.join(root, '05-Personal-DNA/preferences.md');
+  await fs.writeFile(marker, 'user-owned knowledge');
+  await bootstrapData(root);
+  assert.equal(await fs.readFile(marker, 'utf8'), 'user-owned knowledge');
 });

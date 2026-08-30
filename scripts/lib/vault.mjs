@@ -3,10 +3,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-export const DEFAULT_ROOT = path.resolve(moduleDir, '../..');
+export const FRAMEWORK_ROOT = path.resolve(moduleDir, '../..');
+export const DEFAULT_ROOT = path.join(FRAMEWORK_ROOT, 'data');
 
 export function vaultRoot() {
   return path.resolve(process.env.DESIGN_MEMORY_ROOT || DEFAULT_ROOT);
+}
+
+export function frameworkRoot() {
+  return FRAMEWORK_ROOT;
 }
 
 export function toPosix(value) {

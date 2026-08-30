@@ -19,6 +19,9 @@ case "$COMMAND" in
   start)
     exec "$NODE_BIN" "$ROOT_DIR/review-app/server.mjs" "$@"
     ;;
+  bootstrap)
+    exec "$NODE_BIN" "$ROOT_DIR/scripts/bootstrap-data.mjs" "$@"
+    ;;
   ingest)
     exec "$NODE_BIN" "$ROOT_DIR/scripts/ingest.mjs" "$@"
     ;;
@@ -52,6 +55,7 @@ case "$COMMAND" in
     echo ""
     echo "Commands:"
     echo "  start"
+    echo "  bootstrap [--root <data-directory>]"
     echo "  ingest --url|--image|--video|--github <value>"
     echo "  tutorial --url <xiaohongshu|douyin|bilibili> [--evidence evidence.json]"
     echo "  catalog"

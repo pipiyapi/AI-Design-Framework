@@ -14,5 +14,6 @@ jobs:
         with:
           node-version: 22
       - run: node --test tests/*.test.mjs
-      - run: node scripts/build-catalog.mjs
-      - run: node scripts/build-skill.mjs
+      - run: node scripts/bootstrap-data.mjs --root "$RUNNER_TEMP/ai-design-data"
+      - run: DESIGN_MEMORY_ROOT="$RUNNER_TEMP/ai-design-data" node scripts/build-catalog.mjs
+      - run: DESIGN_MEMORY_ROOT="$RUNNER_TEMP/ai-design-data" node scripts/build-skill.mjs

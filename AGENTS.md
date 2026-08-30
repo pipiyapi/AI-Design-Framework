@@ -1,6 +1,14 @@
-# Personal Design Memory workspace
+# AI Design Framework workspace
 
-This repository is the editable source of truth for the user's personal frontend-aesthetic memory. The user should be able to operate it conversationally and is not expected to know frontend code, scraping tools, schemas, or Git commands.
+This outer repository is the reusable system framework. The nested `data/` directory is a separate Git repository and the editable source of truth for the user's personal frontend-aesthetic memory. The user should be able to operate both conversationally and is not expected to know frontend code, scraping tools, schemas, or Git commands.
+
+## Repository boundary
+
+- Framework owns `bin/`, `scripts/`, `review-app/`, `skill-source/`, `_templates/`, `data-template/`, tests, documentation, and CI.
+- Data owns all numbered knowledge directories, `_assets/`, `_evidence/`, `_archive/`, `_candidates/`, `_generation/`, `_system/`, `_experiments/`, `.obsidian/`, and its own `AGENTS.md`.
+- `data/` is ignored by the outer repository. Never stage, commit, or push Data through the Framework repository, and never copy Framework code into the Data repository.
+- `skill-dist/` is a generated local artifact composed from both repositories and is not a source of truth.
+- Commands run from the Framework root and default to `data/`. `DESIGN_MEMORY_ROOT` may point to another compatible Data repository.
 
 ## Intake requests
 
