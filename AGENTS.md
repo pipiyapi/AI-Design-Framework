@@ -34,6 +34,8 @@ For Xiaohongshu, Douyin, and Bilibili tutorials, run `bin/design-memory tutorial
 
 Keep raw text, transcripts, comments, source prompts, and source tool names in `_evidence/tutorials`; do not publish them into the Personal Design Skill. The Workflow note must retain only the demonstrated order, mechanism, inputs/outputs, success criteria, failure modes, compact prompt constraints, and capability slots. Never copy a long example prompt verbatim.
 
+Write all user-facing Inbox, Workflow, and Playbook prose in Simplified Chinese. Keep stable machine identifiers, capability slots, and controlled taxonomy tags in English.
+
 A confirmed tutorial becomes a Workflow in `07-Workflows`. A reviewed tool-agnostic generalization becomes a Playbook in `08-Playbooks`. Neither is a Recipe until it has been implemented and visually accepted in a real project.
 
 Default `image-generation` to Codex Image Generation. Default `video-generation` to the official Jimeng CLI with Seedance 2.0 or 2.5. Before every video submission, show the exact single-output proposal and ask for explicit confirmation. One confirmation authorizes one task and one output; batching, automatic variants, and approval reuse are forbidden. Every retry or material change requires confirmation again. Polling, downloading, and QA after submission do not. Never store credentials or session material in the vault, Git, GitHub, proposals, or logs.

@@ -41,24 +41,24 @@ function derivePlatformId(platform, url) {
   return '';
 }
 
-function lines(values, fallback = '_Pending evidence-aware distillation._') {
+function lines(values, fallback = '_等待基于证据进行提炼。_') {
   if (!Array.isArray(values) || !values.length) return fallback;
   return values.map((value, index) => {
     if (typeof value === 'string') return `${index + 1}. ${value}`;
-    const label = value.title || value.action || `Step ${index + 1}`;
+    const label = value.title || value.action || `步骤 ${index + 1}`;
     const detail = value.detail || value.mechanism || '';
-    const io = [value.input && `Input: ${value.input}`, value.output && `Output: ${value.output}`].filter(Boolean).join(' · ');
+    const io = [value.input && `输入：${value.input}`, value.output && `输出：${value.output}`].filter(Boolean).join(' · ');
     return `${index + 1}. **${label}**${detail ? ` — ${detail}` : ''}${io ? ` (${io})` : ''}`;
   }).join('\n');
 }
 
-function bullets(values, fallback = '_Not yet established._') {
+function bullets(values, fallback = '_尚未确定。_') {
   if (!Array.isArray(values) || !values.length) return fallback;
   return values.map(value => `- ${typeof value === 'string' ? value : JSON.stringify(value)}`).join('\n');
 }
 
 function compactPromptRecipe(value) {
-  if (!value) return '_Not yet distilled._';
+  if (!value) return '_尚未提炼。_';
   const text = Array.isArray(value) ? value.join('\n') : String(value);
   if (text.length > 1400) throw new Error('prompt_recipe is too long. Store the original prompt in raw evidence and keep only compact constraints here.');
   return text;
@@ -84,7 +84,7 @@ export async function ingestTutorial(options, root = vaultRoot()) {
   const hasStructuredEvidence = Boolean(options.evidence);
   const canonicalUrl = evidence.canonical_url || options.url;
   const platformId = evidence.platform_id || derivePlatformId(platform, canonicalUrl);
-  const title = options.title || evidence.title || `${platform} tutorial`;
+  const title = options.title || evidence.title || `${platform} 教程`;
   const capturedAt = evidence.captured_at || timestamp();
   const hashInput = JSON.stringify({ platform, canonicalUrl, title, page_text: evidence.page_text || '', transcript: evidence.transcript || '' });
   const contentHash = crypto.createHash('sha256').update(hashInput).digest('hex');
@@ -149,9 +149,9 @@ export async function ingestTutorial(options, root = vaultRoot()) {
     updated_at: capturedAt,
   };
   const mapping = slots.length
-    ? slots.map(slot => `- \`${slot}\`: ${slot === 'image-generation' ? 'Codex Image Generation (default)' : slot === 'video-generation' ? 'Jimeng CLI → Seedance 2.0/2.5 (approval required)' : 'select by current project capability'}`).join('\n')
-    : '_Pending capability mapping._';
-  const body = `\n# ${title}\n\n## Outcome\n\n${distilled.outcome || '_Pending._'}\n\n## Evidence coverage\n\n${bullets(raw.evidence_coverage)}\n\nMissing: ${raw.missing_evidence.length ? raw.missing_evidence.join(', ') : 'none recorded'}\n\n## Distilled method\n\n${lines(distilled.steps)}\n\n## Capability mapping\n\n${mapping}\n\n## Success criteria\n\n${bullets(distilled.success_criteria)}\n\n## Failure modes\n\n${bullets(distilled.failure_modes)}\n\n## Prompt recipe\n\n${compactPromptRecipe(distilled.prompt_recipe)}\n\n## Reuse notes\n\n${distilled.reuse_notes || '_Pending review._'}\n\n## Provenance\n\nRaw evidence: [[${relativeToRoot(evidenceFile, root)}]]\n`;
+    ? slots.map(slot => `- \`${slot}\`：${slot === 'image-generation' ? 'Codex 图像生成（默认）' : slot === 'video-generation' ? '集梦 CLI → Seedance 2.0/2.5（生成前需要确认）' : '按当前项目能力选择'}`).join('\n')
+    : '_等待能力映射。_';
+  const body = `\n# ${title}\n\n## 目标效果\n\n${distilled.outcome || '_等待补充。_'}\n\n## 已获得的证据\n\n${bullets(raw.evidence_coverage)}\n\n暂时缺少：${raw.missing_evidence.length ? raw.missing_evidence.join('、') : '未记录缺失项'}\n\n## 提炼后的制作流程\n\n${lines(distilled.steps)}\n\n## 能力与工具映射\n\n${mapping}\n\n## 成功标准\n\n${bullets(distilled.success_criteria)}\n\n## 常见失败方式\n\n${bullets(distilled.failure_modes)}\n\n## 提示词约束\n\n${compactPromptRecipe(distilled.prompt_recipe)}\n\n## 复用建议\n\n${distilled.reuse_notes || '_等待审核。_'}\n\n## 来源\n\n原始轻量证据：[[${relativeToRoot(evidenceFile, root)}]]\n`;
   const note = path.join(root, '00-Inbox', `${id}.md`);
   await writeEntry(note, noteData, body);
   return { id, note, evidenceFile, duplicate: false };
