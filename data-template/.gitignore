@@ -8,8 +8,5 @@ node_modules/
 *.log
 .dreamina_cli/
 
-# Raw recordings are intake-only. Keep distilled keyframes and notes instead.
-*.mov
-*.mp4
-*.webm
-*.mkv
+# Raw recordings stay under the ignored .design-memory intake cache.
+# Curated short previews under _assets/tutorials are allowed in Git.

@@ -15,6 +15,14 @@
     "imageGenerator": "codex-imagegen",
     "videoGenerator": "jimeng-cli",
     "videoModels": ["seedance-2.0", "seedance-2.5"],
+    "tutorialPreview": {
+      "keyframeCount": "3-6",
+      "allowShortPreview": true,
+      "maxDurationSeconds": 8,
+      "maxFileSizeMB": 5,
+      "preferredFormats": ["webm", "mp4", "animated-webp"],
+      "gifOnlyWhenTiny": true
+    },
     "videoApproval": {
       "requiredBeforeEverySubmission": true,
       "maxOutputsPerApproval": 1,

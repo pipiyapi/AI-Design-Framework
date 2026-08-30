@@ -25,12 +25,12 @@ const copy = {
     positive: '确认晋级',
   },
   workflows: {
-    kicker: '教程提炼',
-    heading: '验证步骤证据，再收下这条路径。',
-    type: '工作流候选',
-    negative: '不保留',
-    defer: '证据不足',
-    positive: '确认可复用',
+    kicker: '教程知识',
+    heading: '先看原帖证据，再查看可执行 SOP。',
+    type: '双层 SOP 知识条目',
+    negative: '',
+    defer: '',
+    positive: '',
   },
   playbooks: {
     kicker: '方法泛化',
@@ -87,7 +87,8 @@ function setStatus(message) { $('#memory-status').textContent = message; }
 
 function renderCounts() {
   for (const key of ['inbox', 'workflows', 'patterns', 'playbooks', 'feedback']) {
-    $(`[data-count="${key}"]`).textContent = state.data?.[key]?.length || 0;
+    const target = $(`[data-count="${key}"]`);
+    if (target) target.textContent = state.data?.[key]?.length || 0;
   }
 }
 
@@ -232,7 +233,7 @@ function render() {
   const item = currentItem();
   $('#review-progress').textContent = `${list.length ? state.index + 1 : 0} / ${list.length}`;
   $('#review-stage').hidden = !item;
-  $('#decision-bar').hidden = !item;
+  $('#decision-bar').hidden = !item || state.tab === 'workflows';
   $('#empty-state').hidden = Boolean(item);
   if (!item) return;
 

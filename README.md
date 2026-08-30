@@ -1,6 +1,6 @@
 # AI Design Framework
 
-个人前端设计知识库的可复用框架。它包含采集与提炼脚本、Workflow / Playbook / Recipe 成熟度模型、视觉审核页、Personal Design Skill 源文件、测试和一份空白数据蓝图；不包含任何个人知识内容。
+个人前端设计知识库的可复用框架。它包含采集与提炼脚本、教程双层 SOP、视觉参考与偏好系统、视觉审核页、Personal Design Skill 源文件、测试和一份空白数据蓝图；不包含任何个人知识内容。
 
 本地采用两个完全独立的 Git 仓库：
 
@@ -33,3 +33,5 @@ bin/design-memory bootstrap --root <directory>
 ## 数据边界
 
 Framework 只保存能力和空白蓝图。Reference、Workflow、Playbook、Recipe、Personal DNA、项目反馈、轻量截图/关键帧、提炼后的证据、catalog 和 Obsidian 配置只属于 Data。原始录像只进入 Data 内被 Git 忽略的 `.design-memory/intake-media/` 临时区，不属于正式知识库。`skill-dist/` 是两层组合后的可再生产物，不进入任一仓库历史。
+
+三大视频平台教程采用直接路径：一个条目同时包含“原帖实现信息”和“Workflow SOP”，完成采集后直接进入 `07-Workflows`，不需要 Inbox 审批，也不再向 Playbook 或 Recipe 晋升。

@@ -30,13 +30,14 @@ When the user asks to save, study, or ingest a website, image, video, GitHub rep
 
 ## Tutorial intake
 
-For Xiaohongshu, Douyin, and Bilibili tutorials, run `bin/design-memory tutorial --url <share-url>` and provide a structured evidence file when browser or local extraction produced richer evidence. Fuse page text, subtitles/transcript, timed keyframes/OCR, and useful author comments when available. Record missing evidence explicitly.
+For Xiaohongshu, Douyin, and Bilibili tutorials, run `bin/design-memory tutorial --url <share-url>` and provide structured evidence when browser or local extraction produced richer evidence. Fuse page text, subtitles/transcript, timed keyframes/OCR, and useful author comments when available. Record missing evidence explicitly.
 
-Keep raw text, transcripts, comments, source prompts, and source tool names in `_evidence/tutorials`; do not publish them into the Personal Design Skill. The Workflow note must retain only the demonstrated order, mechanism, inputs/outputs, success criteria, failure modes, compact prompt constraints, and capability slots. Never copy a long example prompt verbatim.
+Every completed tutorial intake is written directly to `07-Workflows` as one two-part Chinese note; it does not use an Inbox approval, Playbook promotion, or Recipe promotion path:
 
-Write all user-facing Inbox, Workflow, and Playbook prose in Simplified Chinese. Keep stable machine identifiers, capability slots, and controlled taxonomy tags in English.
+1. **原帖实现信息** — preserve source metadata, faithful page/post information, timestamped video observations, useful author replies, source tool mentions, 3–6 keyframes, an optional lightweight preview, and explicit missing evidence. Clearly separate observed source facts from inference. Do not copy a long source prompt or full transcript verbatim.
+2. **Workflow SOP** — produce prerequisites, inputs, numbered actions, outputs, a checkpoint and failure rollback for every step, capability/tool mapping, deliverables, final acceptance criteria, failure repair, and applicability boundaries.
 
-A confirmed tutorial becomes a Workflow in `07-Workflows`. A reviewed tool-agnostic generalization becomes a Playbook in `08-Playbooks`. Neither is a Recipe until it has been implemented and visually accepted in a real project.
+Write all user-facing tutorial prose in Simplified Chinese. Keep stable machine identifiers, capability slots, and controlled taxonomy tags in English. Raw long recordings stay in the ignored local intake cache. A curated preview may be committed under `_assets/tutorials` only when it is 3–8 seconds, no more than 5 MB, muted when audio is not essential, and useful for understanding motion. Prefer WebM/MP4 or animated WebP; use GIF only for tiny simple loops.
 
 Default `image-generation` to Codex Image Generation. Default `video-generation` to the official Jimeng CLI with Seedance 2.0 or 2.5. Before every video submission, show the exact single-output proposal and ask for explicit confirmation. One confirmation authorizes one task and one output; batching, automatic variants, and approval reuse are forbidden. Every retry or material change requires confirmation again. Polling, downloading, and QA after submission do not. Never store credentials or session material in the vault, Git, GitHub, proposals, or logs.
 

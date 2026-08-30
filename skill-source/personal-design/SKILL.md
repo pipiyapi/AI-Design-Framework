@@ -1,6 +1,6 @@
 ---
 name: personal-design
-description: Use a curated personal visual-design memory when designing, implementing, or reviewing frontend websites and interfaces; reuse validated tutorial workflows and tool-agnostic playbooks; and record project-specific design feedback. Do not use it for backend-only work or generic code tasks without a visual-design decision.
+description: Use a curated personal visual-design memory when designing, implementing, or reviewing frontend websites and interfaces; reuse source-grounded tutorial SOPs; and record project-specific design feedback. Do not use it for backend-only work or generic code tasks without a visual-design decision.
 ---
 
 # Personal Design Memory
@@ -20,13 +20,13 @@ Read [references/retrieval-workflow.md](references/retrieval-workflow.md) when s
 
 ## Tutorial and media workflows
 
-- Treat a Workflow as source-derived evidence, not universal truth. Keep its step order and checks, but map named source tools to capability slots.
+- Read both halves of a tutorial Workflow: use `原帖实现信息` to understand provenance and uncertainty, then execute `Workflow SOP` in order. Map named source tools to capability slots.
 - Never copy a tutorial's long example prompt into project output. Use only the distilled intent, constraints, motion description, success criteria, and avoidances.
 - Default image generation to Codex Image Generation. Image generation does not require an extra confirmation.
 - Default video generation to the official Jimeng CLI with Seedance 2.0 or 2.5. Read [references/media-generation-policy.md](references/media-generation-policy.md) before any video-generation action.
 - Before every video submission, present one exact proposal and obtain explicit user confirmation. One confirmation permits one task and one output only. A retry or material parameter change requires a new confirmation. Polling, downloading, and quality review after submission do not.
 
-Read [references/tutorial-workflow.md](references/tutorial-workflow.md) when applying a Workflow or Playbook.
+Read [references/tutorial-workflow.md](references/tutorial-workflow.md) when applying a tutorial Workflow SOP.
 
 ## Feedback during a real project
 

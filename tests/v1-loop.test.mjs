@@ -13,7 +13,6 @@ import { createPatternCandidate } from '../scripts/create-pattern-candidate.mjs'
 import { importFeedback } from '../scripts/import-feedback.mjs';
 import { ingest } from '../scripts/ingest.mjs';
 import { ingestTutorial } from '../scripts/ingest-tutorial.mjs';
-import { createPlaybookCandidate } from '../scripts/create-playbook-candidate.mjs';
 import { createVideoProposal } from '../scripts/video-proposal.mjs';
 import { assertSubmissionAllowed } from '../scripts/lib/video-generation-policy.mjs';
 import { readEntry, walkMarkdown } from '../scripts/lib/vault.mjs';
@@ -146,7 +145,7 @@ test('raw video intake stays in the ignored local cache instead of formal assets
   await assert.rejects(fs.access(path.join(root, '_assets/references', result.id, 'temporary-recording.mov')));
 });
 
-test('tutorial evidence becomes a reviewed Workflow and Playbook without publishing raw evidence', async t => {
+test('tutorial evidence becomes a direct two-part Workflow SOP without promotion', async t => {
   const root = await makeRoot();
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const evidenceFile = path.join(root, 'tutorial.json');
@@ -159,7 +158,13 @@ test('tutorial evidence becomes a reviewed Workflow and Playbook without publish
     distillation: {
       outcome: 'character follows pointer',
       capability_slots: ['image-generation', 'video-generation', 'frontend-generation'],
-      steps: ['Create consistent endpoint images', 'Generate one continuous transition clip', 'Map pointer delta to video time'],
+      prerequisites: ['character direction', 'frontend project'],
+      steps: [
+        { title: 'Create endpoint images', input: 'character direction', detail: 'Keep identity and framing fixed.', output: 'two endpoint images', checkpoint: 'Only gaze direction changes.', on_failure: 'Regenerate the inconsistent endpoint.' },
+        { title: 'Generate transition', input: 'endpoint images', detail: 'Use first and last frame control.', output: 'transition clip', checkpoint: 'Identity and camera stay stable.', on_failure: 'Regenerate with stronger stability constraints.' },
+        { title: 'Map pointer state', input: 'pointer position', detail: 'Map horizontal position to video time.', output: 'interactive hero', checkpoint: 'Full range is reachable.', on_failure: 'Check normalization and duration.' },
+      ],
+      deliverables: ['endpoint images', 'transition clip', 'interactive page'],
       success_criteria: ['eyes and head move together'],
       failure_modes: ['seek flooding'],
       prompt_recipe: 'Keep identity fixed; turn eyes and head naturally; preserve lighting and framing.',
@@ -167,7 +172,15 @@ test('tutorial evidence becomes a reviewed Workflow and Playbook without publish
     },
   }));
   const workflow = await ingestTutorial({ url: 'https://xhslink.cn/o/test', evidence: evidenceFile }, root);
-  assert.equal((await readEntry(workflow.note, root)).data.type, 'workflow');
+  const workflowEntry = await readEntry(workflow.note, root);
+  assert.equal(workflowEntry.data.type, 'workflow');
+  assert.equal(workflowEntry.data.status, 'active');
+  assert.equal(workflowEntry.data.review_status, 'not-required');
+  assert.match(workflowEntry.body, /## 第一部分：原帖实现信息/);
+  assert.match(workflowEntry.body, /## 第二部分：Workflow SOP/);
+  assert.match(workflowEntry.body, /检查点/);
+  assert.doesNotMatch(workflowEntry.body, /你应该如何审核|晋升/);
+  assert.equal((await walkMarkdown(path.join(root, '07-Workflows'))).length, 1);
 
   const port = 45500 + Math.floor(Math.random() * 300);
   const child = spawn(process.execPath, [path.join(repoRoot, 'review-app/server.mjs'), '--port', String(port)], {
@@ -177,25 +190,12 @@ test('tutorial evidence becomes a reviewed Workflow and Playbook without publish
   });
   t.after(() => child.kill('SIGTERM'));
   await waitForServer(child, `http://127.0.0.1:${port}/api/health`);
-  const approve = await fetch(`http://127.0.0.1:${port}/api/review/workflow`, {
-    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: workflow.id, decision: 'approved' }),
-  });
-  assert.equal(approve.status, 200);
-  assert.equal((await walkMarkdown(path.join(root, '07-Workflows'))).length, 1);
+  const reviewState = await (await fetch(`http://127.0.0.1:${port}/api/state`)).json();
+  assert.equal(reviewState.workflows.length, 1);
+  assert.equal(reviewState.workflows[0].status, 'active');
 
-  const playbookFile = await createPlaybookCandidate({
-    title: 'Pointer-scrubbed character state', workflows: workflow.id,
-    mechanism: 'Use a short transition clip as a continuous state space controlled by pointer movement.',
-    capabilities: 'image-generation,video-generation,frontend-generation',
-  }, root);
-  const playbook = await readEntry(playbookFile, root);
-  const promote = await fetch(`http://127.0.0.1:${port}/api/review/playbook`, {
-    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: playbook.data.id, decision: 'approved' }),
-  });
-  assert.equal(promote.status, 200);
   const skill = await buildSkill(root);
   await fs.access(path.join(skill.target, 'references/knowledge/workflows'));
-  await fs.access(path.join(skill.target, 'references/knowledge/playbooks'));
   await assert.rejects(fs.access(path.join(skill.target, '_evidence')));
 });
 

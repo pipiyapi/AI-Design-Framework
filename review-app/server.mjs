@@ -125,7 +125,7 @@ async function entriesFrom(relativeDir, type = null) {
 async function state() {
   return {
     inbox: await entriesFrom('00-Inbox', 'reference'),
-    workflows: await entriesFrom('00-Inbox', 'workflow'),
+    workflows: await entriesFrom('07-Workflows', 'workflow'),
     patterns: await entriesFrom('_candidates/patterns'),
     playbooks: await entriesFrom('_candidates/playbooks'),
     feedback: await entriesFrom('06-Projects/Feedback-Inbox'),

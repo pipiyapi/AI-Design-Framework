@@ -1,11 +1,10 @@
 # Tutorial workflow reuse
 
-## Read the layers correctly
+## Read the two parts correctly
 
-- Source Evidence proves what was visible and preserves provenance. Do not retrieve it by default.
-- Workflow preserves a demonstrated sequence and the conditions under which it worked.
-- Playbook removes source-platform and vendor assumptions so the method can travel across projects.
-- Recipe is the local implementation only after a real project result is visually accepted.
+- `原帖实现信息` preserves what the post, video frames, and author replies actually showed. It defines provenance and uncertainty.
+- `Workflow SOP` converts that evidence into an executable sequence with inputs, outputs, checkpoints, rollback, deliverables, and final acceptance criteria.
+- Tutorials are stored directly as Workflow SOPs. There is no Inbox approval or Playbook/Recipe promotion step for this path.
 
 ## Apply a Workflow
 
@@ -15,7 +14,7 @@
 4. Convert prompt recipes into compact constraints. Never reproduce long source prompts verbatim.
 5. Verify the generated assets before coding the interaction. Asset continuity and motion quality may be the dominant risk.
 6. Implement the smallest interaction mechanism that reproduces the behavior, then render and test it.
-7. If the result is accepted in a real project, record it as Recipe evidence. Do not silently promote the Workflow itself.
+7. Keep project-specific changes in the project. Update the central SOP only when new evidence materially improves its steps, checks, or failure recovery.
 
 ## Default capability mapping
 
