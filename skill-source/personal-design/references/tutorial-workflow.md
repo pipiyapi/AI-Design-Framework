@@ -4,7 +4,7 @@
 
 - `原帖实现信息` preserves what the post, video frames, and author replies actually showed. It defines provenance and uncertainty.
 - `Workflow SOP` converts that evidence into an executable sequence with inputs, outputs, checkpoints, rollback, deliverables, and final acceptance criteria.
-- Tutorials are stored directly as Workflow SOPs. There is no Inbox approval or Playbook/Recipe promotion step for this path.
+- Tutorials are stored directly as Workflow SOPs. There is no Inbox approval or promotion step for this path.
 
 ## Apply a Workflow
 

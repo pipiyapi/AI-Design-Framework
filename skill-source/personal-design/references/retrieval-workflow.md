@@ -26,7 +26,7 @@ Use hard constraints before aesthetic similarity. Reject knowledge when `avoid_f
 Load in this order:
 
 1. Personal DNA and anti-patterns relevant to the brief.
-2. Validated Playbooks matching the intended outcome and mechanism.
+2. Accepted Projects proving a similar result worked in practice.
 3. Validated Workflows when a demonstrated execution order is useful.
 4. Validated Patterns matching the product and task.
 5. Verified Recipes matching the stack and context.

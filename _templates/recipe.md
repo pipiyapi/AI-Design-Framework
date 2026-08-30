@@ -1,29 +1,30 @@
 ---
-id: recipe-example
-type: recipe
-title: "Example Recipe"
-status: candidate
-source_pattern: ""
+id: "recipe-example"
+type: "recipe"
+title: "Verified implementation recipe"
+status: "verified"
 source_project: ""
-stack: ""
-dependencies: []
+source_references: []
+applied_in: []
+source_code_paths: []
+source_commit: ""
+tags: []
 works_for: []
 avoid_for: []
-preview_asset: ""
-created_at: ""
-updated_at: ""
 ---
 
-# Example Recipe
+# Verified implementation recipe
 
-## Preview
+## 达成效果
 
-## Intent
+## 前置条件
 
-## Parameters
+## 实现结构
 
-## Minimal implementation
+## 核心参数
 
-## Accessibility and performance
+## 验收标准
 
-## Verification history
+## 常见失败与修复
+
+## 源码出处

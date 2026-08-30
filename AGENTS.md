@@ -5,7 +5,7 @@ This outer repository is the reusable system framework. The nested `data/` direc
 ## Repository boundary
 
 - Framework owns `bin/`, `scripts/`, `review-app/`, `skill-source/`, `_templates/`, `data-template/`, tests, documentation, and CI.
-- Data owns all numbered knowledge directories, `_assets/`, `_evidence/`, `_archive/`, `_candidates/`, `_generation/`, `_system/`, `_experiments/`, `.obsidian/`, and its own `AGENTS.md`.
+- Data owns all numbered knowledge directories, `_assets/`, `_evidence/`, `_archive/`, `_generation/`, `_system/`, `_experiments/`, `.obsidian/`, and its own `AGENTS.md`.
 - `data/` is ignored by the outer repository. Never stage, commit, or push Data through the Framework repository, and never copy Framework code into the Data repository.
 - `skill-dist/` is a generated local artifact composed from both repositories and is not a source of truth.
 - Commands run from the Framework root and default to `data/`. `DESIGN_MEMORY_ROOT` may point to another compatible Data repository.
@@ -32,7 +32,7 @@ When the user asks to save, study, or ingest a website, image, video, GitHub rep
 
 For Xiaohongshu, Douyin, and Bilibili tutorials, run `bin/design-memory tutorial --url <share-url>` and provide structured evidence when browser or local extraction produced richer evidence. Fuse page text, subtitles/transcript, timed keyframes/OCR, and useful author comments when available. Record missing evidence explicitly.
 
-Every completed tutorial intake is written directly to `07-Workflows` as one two-part Chinese note; it does not use an Inbox approval, Playbook promotion, or Recipe promotion path:
+Every completed tutorial intake is written directly to `07-Workflows` as one two-part Chinese note; it does not use an Inbox approval or promotion path:
 
 1. **原帖实现信息** — preserve source metadata, faithful page/post information, timestamped video observations, useful author replies, source tool mentions, 3–6 keyframes, an optional lightweight preview, and explicit missing evidence. Clearly separate observed source facts from inference. Do not copy a long source prompt or full transcript verbatim.
 2. **Workflow SOP** — produce prerequisites, inputs, numbered actions, outputs, a checkpoint and failure rollback for every step, capability/tool mapping, deliverables, final acceptance criteria, failure repair, and applicability boundaries.
@@ -51,12 +51,21 @@ Do not reproduce every saved site. A screenshot plus compact analysis is suffici
 - Extract only high-value decisions: tokens, layout rules, component behavior, motion parameters, and small focused snippets when licensing permits. Do not archive a whole dependency tree or long generated bundles.
 - Create a reusable Recipe only after an implementation has been used and visually accepted in a real project.
 
+## Accepted projects and distillation
+
+- The knowledge model is a graph, not a promotion ladder: References and Workflows inform Projects; visually accepted Projects validate Recipes, Patterns, and Personal DNA.
+- Keep unaccepted implementations in `06-Projects/Experiments`. A visually accepted result becomes one bundle under `06-Projects/Accepted/<project-id>/` with `project.md`, compact visual evidence, feedback, and a reproducible source snapshot or exact source repository/commit/path.
+- A source snapshot keeps authored source, configuration, lockfiles, necessary assets, and licenses. Exclude dependency trees, caches, generated build output, raw recordings, credentials, and unrelated large assets.
+- Create a Recipe only from a visually accepted project. Link it to `source_project`, exact source paths, and commit; keep the full source in one place and extract only focused reusable guidance.
+- Create a Pattern when one approved Reference plus one accepted project result supports the same rule, or when multiple accepted results support it. Pattern creation is direct and evidence-backed; there is no candidate promotion queue.
+- Generate `_system/relationships.json` from relation fields whenever the catalog is rebuilt.
+
 ## Review and distillation
 
 - `bin/design-memory start` opens the visual-first review queue.
 - A liked Inbox item becomes a Reference; it does not become a Pattern automatically.
-- Propose a Pattern only when at least two approved References support the same rule, or when one Reference plus one accepted project result provides strong evidence.
-- Pattern promotion and project-feedback absorption require visual evidence and explicit user confirmation.
+- Distill a Pattern only when at least two approved References support the same rule, or when one Reference plus one accepted project result provides strong evidence.
+- Project acceptance and project-feedback absorption require visual evidence and explicit user confirmation.
 - When mature knowledge changes, run `bin/design-memory build` so the published Skill stays synchronized with the Obsidian/GitHub source.
 
 ## Project feedback

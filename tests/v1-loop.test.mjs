@@ -9,13 +9,12 @@ import { fileURLToPath } from 'node:url';
 import { buildCatalog } from '../scripts/build-catalog.mjs';
 import { buildSkill } from '../scripts/build-skill.mjs';
 import { bootstrapData } from '../scripts/bootstrap-data.mjs';
-import { createPatternCandidate } from '../scripts/create-pattern-candidate.mjs';
 import { importFeedback } from '../scripts/import-feedback.mjs';
 import { ingest } from '../scripts/ingest.mjs';
 import { ingestTutorial } from '../scripts/ingest-tutorial.mjs';
 import { createVideoProposal } from '../scripts/video-proposal.mjs';
 import { assertSubmissionAllowed } from '../scripts/lib/video-generation-policy.mjs';
-import { readEntry, walkMarkdown } from '../scripts/lib/vault.mjs';
+import { readEntry, walkMarkdown, writeEntry } from '../scripts/lib/vault.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -23,11 +22,9 @@ async function makeRoot() {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'design-memory-v1-'));
   for (const dir of [
     '00-Inbox', '01-References', '02-Patterns', '03-Recipes', '04-Principles',
-    '05-Personal-DNA', '06-Projects/Feedback-Inbox', '06-Projects/Accepted',
-    '07-Workflows', '08-Playbooks',
-    '_assets/references', '_archive/rejected-references', '_archive/rejected-patterns',
-    '_archive/rejected-workflows', '_archive/rejected-playbooks', '_candidates/patterns',
-    '_candidates/playbooks', '_evidence/tutorials', '_generation/video-proposals', '_system', 'skill-dist',
+    '05-Personal-DNA', '06-Projects/Feedback-Inbox', '06-Projects/Experiments', '06-Projects/Accepted',
+    '07-Workflows', '_assets/references', '_archive/rejected-references',
+    '_archive/rejected-workflows', '_evidence/tutorials', '_generation/video-proposals', '_system', 'skill-dist',
   ]) await fs.mkdir(path.join(root, dir), { recursive: true });
   await fs.cp(path.join(repoRoot, 'skill-source'), path.join(root, 'skill-source'), { recursive: true });
   await fs.copyFile(path.join(repoRoot, 'data-template/_system/settings.json'), path.join(root, '_system/settings.json'));
@@ -48,7 +45,7 @@ async function waitForServer(child, url) {
   throw new Error('Server did not become ready.');
 }
 
-test('V1 closes the loop from visual inbox to skill and project feedback', async t => {
+test('knowledge graph closes the loop from Reference through accepted Project to Pattern and Recipe', async t => {
   const root = await makeRoot();
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const image = path.join(root, 'fixture.svg');
@@ -77,28 +74,41 @@ test('V1 closes the loop from visual inbox to skill and project feedback', async
   }
   assert.equal((await walkMarkdown(path.join(root, '01-References'))).length, 2);
 
-  const candidate = await createPatternCandidate({
-    title: 'Editorial Split Memory',
-    references: `${first.id},${second.id}`,
-    rule: 'Use an asymmetric split between a dense anchor and generous reading space.',
-    tags: 'editorial,asymmetric',
-    'works-for': 'portfolio,editorial',
-    'avoid-for': 'dense-dashboard',
-  }, root);
-  const candidateEntry = await readEntry(candidate, root);
-  const promote = await fetch(`http://127.0.0.1:${port}/api/review/pattern`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ id: candidateEntry.data.id, decision: 'approved' }),
-  });
-  assert.equal(promote.status, 200);
-  assert.equal((await walkMarkdown(path.join(root, '02-Patterns'))).length, 1);
+  const projectId = 'project-editorial-memory';
+  const patternId = 'pattern-editorial-split-memory';
+  const recipeId = 'recipe-editorial-split-layout';
+  const projectDir = path.join(root, '06-Projects/Accepted', projectId);
+  await fs.mkdir(projectDir, { recursive: true });
+  await writeEntry(path.join(projectDir, 'project.md'), {
+    id: projectId, type: 'project', title: 'Editorial Memory', status: 'accepted',
+    source_references: [first.id, second.id], produced_patterns: [patternId], produced_recipes: [recipeId],
+    outcome: 'Accepted editorial split implementation.',
+  }, '\n# Editorial Memory\n\nVisually accepted project.\n');
+  await writeEntry(path.join(root, '02-Patterns', `${patternId}.md`), {
+    id: patternId, type: 'pattern', title: 'Editorial Split Memory', status: 'validated',
+    source_references: [first.id, second.id], applied_in: [projectId], related_recipes: [recipeId],
+    tags: ['editorial', 'asymmetric'], works_for: ['portfolio'], avoid_for: ['dense-dashboard'],
+  }, '\n# Editorial Split Memory\n\nUse an asymmetric split between a dense anchor and generous reading space.\n');
+  await writeEntry(path.join(root, '03-Recipes', `${recipeId}.md`), {
+    id: recipeId, type: 'recipe', title: 'Editorial Split Layout', status: 'verified',
+    source_project: projectId, source_references: [first.id, second.id], applied_in: [projectId],
+  }, '\n# Editorial Split Layout\n\nVerified implementation recipe.\n');
 
   const catalog = await buildCatalog(root);
   assert.ok(catalog.items.some(item => item.type === 'pattern'));
+  assert.ok(catalog.items.some(item => item.type === 'project'));
+  assert.equal(catalog.items.find(item => item.id === projectId).skill_path, `references/knowledge/projects/${projectId}/project.md`);
+  const relationships = JSON.parse(await fs.readFile(path.join(root, '_system/relationships.json'), 'utf8'));
+  assert.ok(relationships.edges.some(edge => edge.from === projectId && edge.relation === 'produced-recipe' && edge.to === recipeId));
   const skill = await buildSkill(root);
   assert.ok(skill.itemCount >= 2);
   await fs.access(path.join(skill.target, 'references/catalog.json'));
+  await fs.access(path.join(skill.target, 'references/relationships.json'));
+  await fs.access(path.join(skill.target, 'references/knowledge/projects', projectId, 'project.md'));
+  await assert.rejects(fs.access(path.join(skill.target, 'references/knowledge/projects', projectId, 'source')));
+
+  const projectState = await (await fetch(`http://127.0.0.1:${port}/api/state`)).json();
+  assert.equal(projectState.projects.length, 1);
 
   const project = await fs.mkdtemp(path.join(os.tmpdir(), 'design-project-'));
   t.after(() => fs.rm(project, { recursive: true, force: true }));
@@ -107,7 +117,7 @@ test('V1 closes the loop from visual inbox to skill and project feedback', async
     feedbackScript,
     '--project', 'Knowledge Project',
     '--project-type', 'knowledge-base',
-    '--pattern', candidateEntry.data.id,
+    '--pattern', patternId,
     '--classification', 'project-only',
     '--note', 'The motion is too prominent for dense reading.',
     '--before', image,
@@ -127,7 +137,7 @@ test('V1 closes the loop from visual inbox to skill and project feedback', async
     body: JSON.stringify({ id: feedbackState.feedback[0].id, decision: 'approved', classification: 'project-only' }),
   });
   assert.equal(approve.status, 200);
-  assert.equal((await walkMarkdown(path.join(root, '06-Projects/Accepted'))).length, 1);
+  assert.ok((await walkMarkdown(path.join(root, '06-Projects/Accepted'))).some(file => file.endsWith('feedback.md')));
 });
 
 test('raw video intake stays in the ignored local cache instead of formal assets', async t => {
@@ -219,6 +229,7 @@ test('framework bootstraps a separate empty data repository without overwriting 
   const root = path.join(parent, 'data');
   await bootstrapData(root);
   await fs.access(path.join(root, '_system/settings.json'));
+  await fs.access(path.join(root, '_system/relationships.json'));
   await fs.access(path.join(root, '00-Inbox/.gitkeep'));
   const marker = path.join(root, '05-Personal-DNA/preferences.md');
   await fs.writeFile(marker, 'user-owned knowledge');

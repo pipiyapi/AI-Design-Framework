@@ -90,13 +90,16 @@ function entryJson(entry) {
     reviewStatus: data.review_status,
     sourceUrl: data.source_url || '',
     sourceType: data.source_type || '',
-    summary: bodySummary(entry.body),
+    summary: data.summary || bodySummary(entry.body),
     tags: array(data.tags),
     suggestedTags: array(data.suggested_tags),
     likedAspects: array(data.liked_aspects),
     worksFor: array(data.works_for),
     avoidFor: array(data.avoid_for),
     sourceReferences: array(data.source_references),
+    sourceWorkflows: array(data.source_workflows),
+    producedRecipes: array(data.produced_recipes),
+    producedPatterns: array(data.produced_patterns),
     projectName: data.project_name || '',
     projectType: data.project_type || '',
     skillVersion: data.skill_version || '',
@@ -126,8 +129,7 @@ async function state() {
   return {
     inbox: await entriesFrom('00-Inbox', 'reference'),
     workflows: await entriesFrom('07-Workflows', 'workflow'),
-    patterns: await entriesFrom('_candidates/patterns'),
-    playbooks: await entriesFrom('_candidates/playbooks'),
+    projects: await entriesFrom('06-Projects/Accepted', 'project'),
     feedback: await entriesFrom('06-Projects/Feedback-Inbox'),
     taxonomy: JSON.parse(await fs.readFile(path.join(root, '_system/taxonomy.json'), 'utf8')),
     settings: {
@@ -154,52 +156,6 @@ async function reviewReference(payload) {
     await moveEntry(entry, path.join(root, '_archive/rejected-references'));
   } else {
     await updateEntry(entry.file, { ...common, status: 'inbox' });
-  }
-  await buildCatalog(root);
-}
-
-async function reviewPattern(payload) {
-  const entry = await findEntryById(path.join(root, '_candidates/patterns'), payload.id);
-  if (!entry) throw new Error('Pattern candidate not found.');
-  if (payload.decision === 'approved') {
-    await updateEntry(entry.file, { status: 'validated', review_status: 'approved' });
-    await moveEntry(entry, path.join(root, '02-Patterns'));
-  } else if (payload.decision === 'rejected') {
-    await updateEntry(entry.file, { status: 'rejected', review_status: 'rejected' });
-    await moveEntry(entry, path.join(root, '_archive/rejected-patterns'));
-  } else {
-    await updateEntry(entry.file, { status: 'candidate', review_status: 'observe' });
-  }
-  await buildCatalog(root);
-}
-
-async function reviewWorkflow(payload) {
-  const entry = await findEntryById(path.join(root, '00-Inbox'), payload.id);
-  if (!entry || entry.data.type !== 'workflow') throw new Error('Workflow not found in Inbox.');
-  const common = { review_status: payload.decision, reviewed_at: new Date().toISOString() };
-  if (payload.decision === 'approved') {
-    await updateEntry(entry.file, { ...common, status: 'validated' });
-    await moveEntry(entry, path.join(root, '07-Workflows'));
-  } else if (payload.decision === 'rejected') {
-    await updateEntry(entry.file, { ...common, status: 'rejected' });
-    await moveEntry(entry, path.join(root, '_archive/rejected-workflows'));
-  } else {
-    await updateEntry(entry.file, { ...common, status: 'inbox' });
-  }
-  await buildCatalog(root);
-}
-
-async function reviewPlaybook(payload) {
-  const entry = await findEntryById(path.join(root, '_candidates/playbooks'), payload.id);
-  if (!entry) throw new Error('Playbook candidate not found.');
-  if (payload.decision === 'approved') {
-    await updateEntry(entry.file, { status: 'validated', review_status: 'approved' });
-    await moveEntry(entry, path.join(root, '08-Playbooks'));
-  } else if (payload.decision === 'rejected') {
-    await updateEntry(entry.file, { status: 'rejected', review_status: 'rejected' });
-    await moveEntry(entry, path.join(root, '_archive/rejected-playbooks'));
-  } else {
-    await updateEntry(entry.file, { status: 'candidate', review_status: 'observe' });
   }
   await buildCatalog(root);
 }
@@ -258,18 +214,6 @@ const server = http.createServer(async (request, response) => {
     }
     if (request.method === 'POST' && url.pathname === '/api/review/reference') {
       await reviewReference(await bodyJson(request));
-      return json(response, 200, { ok: true });
-    }
-    if (request.method === 'POST' && url.pathname === '/api/review/pattern') {
-      await reviewPattern(await bodyJson(request));
-      return json(response, 200, { ok: true });
-    }
-    if (request.method === 'POST' && url.pathname === '/api/review/workflow') {
-      await reviewWorkflow(await bodyJson(request));
-      return json(response, 200, { ok: true });
-    }
-    if (request.method === 'POST' && url.pathname === '/api/review/playbook') {
-      await reviewPlaybook(await bodyJson(request));
       return json(response, 200, { ok: true });
     }
     if (request.method === 'POST' && url.pathname === '/api/review/feedback') {

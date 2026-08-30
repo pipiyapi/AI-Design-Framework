@@ -1,6 +1,6 @@
 {
   "name": "personal-design-memory-v1",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,6 @@
     "ingest:tutorial": "node scripts/ingest-tutorial.mjs",
     "catalog": "node scripts/build-catalog.mjs",
     "build:skill": "node scripts/build-skill.mjs",
-    "playbook": "node scripts/create-playbook-candidate.mjs",
     "video:proposal": "node scripts/video-proposal.mjs",
     "import:feedback": "node scripts/import-feedback.mjs",
     "test": "node --test tests/*.test.mjs"

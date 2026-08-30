@@ -8,9 +8,9 @@ const root = path.resolve(process.argv[2] || '/tmp/design-memory-preview');
 await fs.rm(root, { recursive: true, force: true });
 for (const dir of [
   '00-Inbox', '01-References', '02-Patterns', '03-Recipes', '04-Principles',
-  '05-Personal-DNA', '06-Projects/Feedback-Inbox/demo-project', '06-Projects/Accepted',
+  '05-Personal-DNA', '06-Projects/Feedback-Inbox/demo-project', '06-Projects/Accepted/demo-accepted',
   '_assets/references/ref-atelier', '_assets/preview', '_archive/rejected-references',
-  '_archive/rejected-patterns', '_candidates/patterns', '_system',
+  '_system',
 ]) await fs.mkdir(path.join(root, dir), { recursive: true });
 await fs.copyFile(path.join(repoRoot, '_system/settings.json'), path.join(root, '_system/settings.json'));
 await fs.copyFile(path.join(repoRoot, '_system/taxonomy.json'), path.join(root, '_system/taxonomy.json'));
@@ -33,9 +33,16 @@ await writeEntry(path.join(root, '00-Inbox/ref-atelier.md'), {
   created_at: new Date().toISOString(),
 }, `\n# Atelier Index\n\n## AI analysis\n\nThe page uses a dense dark visual anchor against a generous editorial reading field. Serif display type and a single vermilion accent create a material, archival tone.\n`);
 
-await writeEntry(path.join(root, '_candidates/patterns/pattern-editorial-anchor.md'), {
-  id: 'pattern-editorial-anchor', type: 'pattern', title: 'Editorial Visual Anchor', status: 'candidate',
-  source_references: ['ref-atelier', 'ref-object-index', 'ref-archive-study'],
+await writeEntry(path.join(root, '06-Projects/Accepted/demo-accepted/project.md'), {
+  id: 'project-demo-accepted', type: 'project', title: 'Accepted editorial answer', status: 'accepted',
+  source_references: ['ref-atelier'], produced_patterns: ['pattern-editorial-anchor'],
+  cover_asset: '_assets/preview/after.svg', media_assets: ['_assets/preview/before.svg', '_assets/preview/after.svg'],
+  outcome: 'A quieter accepted editorial answer surface.', created_at: new Date().toISOString(),
+}, `\n# Accepted editorial answer\n\n## 项目结果\n\nThe quieter article layout was visually accepted.\n`);
+
+await writeEntry(path.join(root, '02-Patterns/pattern-editorial-anchor.md'), {
+  id: 'pattern-editorial-anchor', type: 'pattern', title: 'Editorial Visual Anchor', status: 'validated',
+  source_references: ['ref-atelier'], applied_in: ['project-demo-accepted'],
   media_assets: ['_assets/references/ref-atelier/desktop.svg'], tags: ['editorial', 'asymmetric'],
   works_for: ['portfolio', 'brand-led'], avoid_for: ['dense-dashboard'], created_at: new Date().toISOString(),
 }, `\n# Editorial Visual Anchor\n\n## Shared design rule\n\nPlace one optically heavy visual block against a much quieter reading field. The imbalance establishes identity without filling the page with decoration.\n`);

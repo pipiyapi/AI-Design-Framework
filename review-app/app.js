@@ -16,14 +16,6 @@ const copy = {
     defer: '暂不确定',
     positive: '保留',
   },
-  patterns: {
-    kicker: '模式晋级',
-    heading: '这条规律，真的属于你的审美吗？',
-    type: '模式候选',
-    negative: '拒绝晋级',
-    defer: '继续观察',
-    positive: '确认晋级',
-  },
   workflows: {
     kicker: '教程知识',
     heading: '先看原帖证据，再查看可执行 SOP。',
@@ -32,13 +24,13 @@ const copy = {
     defer: '',
     positive: '',
   },
-  playbooks: {
-    kicker: '方法泛化',
-    heading: '去掉工具名称后，它仍然成立吗？',
-    type: '方法手册候选',
-    negative: '拒绝晋级',
-    defer: '继续观察',
-    positive: '确认晋级',
+  projects: {
+    kicker: '成功项目',
+    heading: '这里保存真正做出来、并由你验收过的结果。',
+    type: '已验收项目',
+    negative: '',
+    defer: '',
+    positive: '',
   },
   feedback: {
     kicker: '项目反馈',
@@ -86,7 +78,7 @@ function showToast(message) {
 function setStatus(message) { $('#memory-status').textContent = message; }
 
 function renderCounts() {
-  for (const key of ['inbox', 'workflows', 'patterns', 'playbooks', 'feedback']) {
+  for (const key of ['inbox', 'workflows', 'projects', 'feedback']) {
     const target = $(`[data-count="${key}"]`);
     if (target) target.textContent = state.data?.[key]?.length || 0;
   }
@@ -200,16 +192,22 @@ function renderClassifications() {
   });
 }
 
-function renderWorkflowFacts(item) {
-  const section = $('#workflow-section');
-  const container = $('#workflow-facts');
-  const visible = state.tab === 'workflows' || state.tab === 'playbooks';
+function renderKnowledgeFacts(item) {
+  const section = $('#knowledge-section');
+  const container = $('#knowledge-facts');
+  const visible = state.tab === 'workflows' || state.tab === 'projects';
   section.hidden = !visible;
   container.replaceChildren();
   if (!visible) return;
-  const facts = [
+  $('#knowledge-heading').textContent = state.tab === 'projects' ? '来源与复用关系' : '来源信息与 SOP 状态';
+  const facts = state.tab === 'projects' ? [
+    ['项目结果', item.outcome || '已经通过视觉验收'],
+    ['参考来源', (item.sourceReferences || []).join(' · ') || '未关联 Reference'],
+    ['产出 Recipe', (item.producedRecipes || []).join(' · ') || '尚未提取'],
+    ['产出 Pattern', (item.producedPatterns || []).join(' · ') || '尚未提取'],
+  ] : [
     ['目标效果', item.outcome || '等待补充'],
-    ['证据质量', ({ full: '完整', partial: '部分', weak: '较弱' })[item.evidenceQuality] || item.evidenceQuality || (state.tab === 'playbooks' ? '来自已确认工作流' : '等待判断')],
+    ['证据质量', ({ full: '完整', partial: '部分', weak: '较弱' })[item.evidenceQuality] || item.evidenceQuality || '等待判断'],
     ['能力槽', (item.capabilitySlots || []).join(' · ') || '等待映射'],
     ['缺失证据', (item.missingEvidence || []).join(' · ') || '未记录缺失'],
   ];
@@ -233,7 +231,7 @@ function render() {
   const item = currentItem();
   $('#review-progress').textContent = `${list.length ? state.index + 1 : 0} / ${list.length}`;
   $('#review-stage').hidden = !item;
-  $('#decision-bar').hidden = !item || state.tab === 'workflows';
+  $('#decision-bar').hidden = !item || state.tab === 'workflows' || state.tab === 'projects';
   $('#empty-state').hidden = Boolean(item);
   if (!item) return;
 
@@ -247,7 +245,7 @@ function render() {
   renderMedia(item);
   renderAspects(item);
   renderClassifications();
-  renderWorkflowFacts(item);
+  renderKnowledgeFacts(item);
 
   $('[data-action="negative"]').textContent = config.negative;
   $('[data-action="defer"]').textContent = config.defer;
@@ -282,18 +280,11 @@ async function act(kind) {
   if (state.tab === 'inbox') {
     const decision = kind === 'positive' ? 'liked' : kind === 'negative' ? 'rejected' : 'unsure';
     await post('/api/review/reference', { id: item.id, decision, aspects: [...state.aspects] });
-  } else if (state.tab === 'workflows') {
-    const decision = kind === 'positive' ? 'approved' : kind === 'negative' ? 'rejected' : 'observe';
-    await post('/api/review/workflow', { id: item.id, decision });
-  } else if (state.tab === 'patterns') {
-    const decision = kind === 'positive' ? 'approved' : kind === 'negative' ? 'rejected' : 'observe';
-    await post('/api/review/pattern', { id: item.id, decision });
-  } else if (state.tab === 'playbooks') {
-    const decision = kind === 'positive' ? 'approved' : kind === 'negative' ? 'rejected' : 'observe';
-    await post('/api/review/playbook', { id: item.id, decision });
-  } else {
+  } else if (state.tab === 'feedback') {
     const decision = kind === 'positive' ? 'approved' : 'deferred';
     await post('/api/review/feedback', { id: item.id, decision, classification: state.classification });
+  } else {
+    return;
   }
   showToast('判断已保存到 Obsidian 知识库。');
   state.mediaIndex = 0;

@@ -5,17 +5,34 @@ import { buildCatalog } from './build-catalog.mjs';
 import { ensureDir, frameworkRoot, readJson, vaultRoot } from './lib/vault.mjs';
 
 const KNOWLEDGE_EXPORTS = [
+  ['01-References', 'references'],
   ['02-Patterns', 'patterns'],
   ['03-Recipes', 'recipes'],
   ['04-Principles', 'principles'],
   ['05-Personal-DNA', 'personal-dna'],
+  ['06-Projects/Accepted', 'projects'],
   ['07-Workflows', 'workflows'],
-  ['08-Playbooks', 'playbooks'],
 ];
 
 async function copyExisting(source, target) {
   try {
     await fs.cp(source, target, { recursive: true });
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+}
+
+async function copyProjectSummaries(source, target) {
+  try {
+    for (const entry of await fs.readdir(source, { withFileTypes: true })) {
+      const from = path.join(source, entry.name);
+      const to = path.join(target, entry.name);
+      if (entry.isDirectory()) await copyProjectSummaries(from, to);
+      else if (entry.isFile() && entry.name === 'project.md') {
+        await ensureDir(path.dirname(to));
+        await fs.copyFile(from, to);
+      }
+    }
   } catch (error) {
     if (error.code !== 'ENOENT') throw error;
   }
@@ -38,6 +55,11 @@ export async function buildSkill(root = vaultRoot()) {
     path.join(temporary, 'references/catalog.json'),
     `${JSON.stringify(catalog, null, 2)}\n`,
   );
+  const relationships = await readJson(path.join(root, '_system/relationships.json'), { schemaVersion: 1, edges: [] });
+  await fs.writeFile(
+    path.join(temporary, 'references/relationships.json'),
+    `${JSON.stringify(relationships, null, 2)}\n`,
+  );
   await fs.writeFile(
     path.join(temporary, 'references/source.json'),
     `${JSON.stringify({
@@ -50,7 +72,10 @@ export async function buildSkill(root = vaultRoot()) {
   );
 
   for (const [from, to] of KNOWLEDGE_EXPORTS) {
-    await copyExisting(path.join(root, from), path.join(temporary, 'references/knowledge', to));
+    const sourceDir = path.join(root, from);
+    const targetDir = path.join(temporary, 'references/knowledge', to);
+    if (from === '06-Projects/Accepted') await copyProjectSummaries(sourceDir, targetDir);
+    else await copyExisting(sourceDir, targetDir);
   }
 
   await fs.rm(target, { recursive: true, force: true });

@@ -5,7 +5,7 @@
   "frameworkRepositoryUrl": "https://github.com/pipiyapi/AI-Design-Framework",
   "repositoryBranch": "main",
   "skillName": "personal-design",
-  "skillVersion": "0.2.0",
+  "skillVersion": "0.3.0",
   "reviewPort": 4317,
   "maxSkillResults": 8,
   "mediaPolicy": {

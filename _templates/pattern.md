@@ -1,25 +1,25 @@
 ---
-id: pattern-example
-type: pattern
-title: "Example Pattern"
-status: candidate
+id: "pattern-example"
+type: "pattern"
+title: "Validated design pattern"
+status: "validated"
 source_references: []
+validated_by: []
+applied_in: []
+related_recipes: []
 tags: []
 works_for: []
 avoid_for: []
-confidence: null
-created_at: ""
-updated_at: ""
 ---
 
-# Example Pattern
+# Validated design pattern
 
-## Visual evidence
+## 设计规律
 
-## Shared design rule
+## 为什么有效
 
-## Works for
+## 证据
 
-## Avoid for
+## 适用场景
 
-## Implementation guidance
+## 不适用场景

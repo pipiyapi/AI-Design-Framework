@@ -2,7 +2,11 @@
 
 This repository contains user knowledge and evidence only. Framework code lives in the sibling/parent `AI-Design-Framework` repository.
 
-- Save each platform tutorial directly in `07-Workflows` as one two-part Chinese note: `原帖实现信息` plus `Workflow SOP`; no Inbox approval or Playbook/Recipe promotion is used for this path.
+- Save each platform tutorial directly in `07-Workflows` as one two-part Chinese note: `原帖实现信息` plus `Workflow SOP`; no Inbox approval or promotion is used for this path.
+- Treat knowledge as a relationship graph, not a promotion ladder. References and Workflows inform Projects; visually accepted Projects may directly produce Recipes, Patterns, and confirmed Personal DNA.
+- Keep unfinished implementations in `06-Projects/Experiments`. Put an accepted implementation under `06-Projects/Accepted/<project-id>/` with `project.md`, visual evidence, feedback, and reproducible authored source or an exact repository/commit/path.
+- Keep authored source, configuration, lockfiles, necessary assets, and licenses. Exclude `node_modules`, caches, generated builds, raw recordings, credentials, and unrelated large assets.
+- A Recipe must name its accepted `source_project`, exact source files, and source commit. A Pattern must name its supporting References and accepted Projects. Do not use candidate promotion queues.
 - Preserve faithful source details, timestamped observations, author replies, 3–6 keyframes and missing evidence in part one. Put prerequisites, actions, outputs, checkpoints, failure rollback and acceptance criteria in part two.
 - Raw recordings stay in the ignored `.design-memory/intake-media/` cache. A curated 3–8 second preview up to 5 MB may be committed under `_assets/tutorials`; prefer WebM/MP4 or animated WebP over GIF.
 - Keep new References and Workflows in `00-Inbox` until the user reviews them.

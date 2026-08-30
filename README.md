@@ -1,6 +1,6 @@
 # AI Design Framework
 
-个人前端设计知识库的可复用框架。它包含采集与提炼脚本、教程双层 SOP、视觉参考与偏好系统、视觉审核页、Personal Design Skill 源文件、测试和一份空白数据蓝图；不包含任何个人知识内容。
+个人前端设计知识库的可复用框架。核心模型是“来源—项目—验证—复用”：Reference 与 Workflow 提供来源，Accepted Project 保存真实结果和可复现源码，Recipe 保存经过验收的实现方法，Pattern 与 Personal DNA 保存被项目证实的规律和偏好。
 
 本地采用两个完全独立的 Git 仓库：
 
@@ -32,6 +32,16 @@ bin/design-memory bootstrap --root <directory>
 
 ## 数据边界
 
-Framework 只保存能力和空白蓝图。Reference、Workflow、Playbook、Recipe、Personal DNA、项目反馈、轻量截图/关键帧、提炼后的证据、catalog 和 Obsidian 配置只属于 Data。原始录像只进入 Data 内被 Git 忽略的 `.design-memory/intake-media/` 临时区，不属于正式知识库。`skill-dist/` 是两层组合后的可再生产物，不进入任一仓库历史。
+Framework 只保存能力和空白蓝图。Reference、Workflow、Accepted Project、Recipe、Pattern、Personal DNA、项目反馈、轻量截图/关键帧、提炼后的证据、catalog、relationships 和 Obsidian 配置只属于 Data。原始录像只进入 Data 内被 Git 忽略的 `.design-memory/intake-media/` 临时区，不属于正式知识库。`skill-dist/` 是两层组合后的可再生产物，不进入任一仓库历史。
 
-三大视频平台教程采用直接路径：一个条目同时包含“原帖实现信息”和“Workflow SOP”，完成采集后直接进入 `07-Workflows`，不需要 Inbox 审批，也不再向 Playbook 或 Recipe 晋升。
+三大视频平台教程采用直接路径：一个条目同时包含“原帖实现信息”和“Workflow SOP”，完成采集后直接进入 `07-Workflows`，不需要 Inbox 审批或晋升。只有当某个方法在真实项目中实现并通过视觉验收后，项目本身才能产出 Recipe。
+
+## 五类核心知识
+
+- `Reference`：看过什么、喜欢什么。
+- `Workflow`：外部教程已经跑通的方法顺序。
+- `Project`：自己真正做出来并确认接受的结果。
+- `Recipe`：从成功项目源码中提炼的可复用实现。
+- `Personal DNA`：经过重复反馈或明确确认的长期偏好。
+
+`Pattern` 用于跨来源和项目成立的设计规律，不是必经晋升级别。Catalog 构建时会同步生成 `_system/relationships.json`，记录这些知识之间的来源、应用和验证关系。
